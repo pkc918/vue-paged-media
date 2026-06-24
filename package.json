@@ -1,16 +1,16 @@
 {
-  "name": "vue-paged",
+  "name": "vue-paged-media",
   "version": "0.0.0",
-  "description": "A starter for creating a TypeScript package.",
-  "homepage": "https://github.com/author/library#readme",
+  "description": "A Vue library for previewing paged media layouts before printing.",
+  "homepage": "https://github.com/pkc918/vue-paged-media",
   "bugs": {
-    "url": "https://github.com/author/library/issues"
+    "url": "https://github.com/pkc918/vue-paged-media/issues"
   },
   "license": "MIT",
-  "author": "Author Name <author.name@mail.com>",
+  "author": "青椒肉丝 <xiaopan2000918@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/author/library.git"
+    "url": "git@github.com:pkc918/vue-paged-media.git"
   },
   "files": [
     "dist"
@@ -36,7 +36,8 @@
     "@typescript/native-preview": "7.0.0-dev.20260509.2",
     "bumpp": "^11.1.0",
     "typescript": "^6.0.3",
-    "vite-plus": "^0.1.20"
+    "vite-plus": "^0.1.20",
+    "vue": "^3.5.38"
   },
   "overrides": {
     "vite": "npm:@voidzero-dev/vite-plus-core@latest",

@@ -1,6 +1,6 @@
-# vite-plus-starter
+# vue-paged-media
 
-A starter for creating a Vite Plus project.
+A Vue library for previewing paged media layouts before printing.
 
 ## Development
 
