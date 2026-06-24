@@ -153,7 +153,6 @@ function splitTextIntoParent(node: Node, parent: Node, measurePage: HTMLElement)
   let low = 0;
   let high = text.length;
   let best = 0;
-  let bestNode: Text | null = null;
 
   while (low <= high) {
     const middle = Math.floor((low + high) / 2);
@@ -162,18 +161,18 @@ function splitTextIntoParent(node: Node, parent: Node, measurePage: HTMLElement)
 
     if (pageHasRoom(measurePage)) {
       best = middle;
-      if (bestNode) removeNode(bestNode);
-      bestNode = candidate;
       low = middle + 1;
     } else {
-      removeNode(candidate);
       high = middle - 1;
     }
+    removeNode(candidate);
   }
 
+  const bestNode = best > 0 ? document.createTextNode(text.slice(0, best)) : null;
   if (bestNode && best < text.length) {
     bestNode.textContent = trimTrailingBreak(text.slice(0, best));
   }
+  if (bestNode) parent.appendChild(bestNode);
 
   const restText = trimLeadingBreak(text.slice(best));
   return {
