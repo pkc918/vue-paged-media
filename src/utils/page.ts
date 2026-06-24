@@ -18,7 +18,9 @@ export function getPageSize(presetPage: PresetPageSize | PageSize): PageSize {
 }
 
 export function getMargin(margin: PageMargin | AxisPageMargin): PageMargin {
-  if (margin instanceof PageMargin) return margin;
-  const { x, y } = margin;
-  return new PageMargin(x, y, x, y);
+  if ("x" in margin && "y" in margin) {
+    const { x, y } = margin;
+    return new PageMargin(y, x, y, x);
+  }
+  return new PageMargin(margin.top, margin.right, margin.bottom, margin.left);
 }

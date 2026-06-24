@@ -20,3 +20,7 @@ export class AxisPageMargin {
     public y: number,
   ) {}
 }
+
+export type PageDimensions = PresetPageSize | PageSize;
+
+export type PageMarginInput = PageMargin | AxisPageMargin;

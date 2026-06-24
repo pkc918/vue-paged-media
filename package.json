@@ -43,5 +43,19 @@
     "vite": "npm:@voidzero-dev/vite-plus-core@latest",
     "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
   },
-  "packageManager": "npm@11.16.0"
+  "packageManager": "npm@11.16.0",
+  "inlinedDependencies": {
+    "@babel/parser": "7.29.7",
+    "@vue/compiler-core": "3.5.38",
+    "@vue/compiler-dom": "3.5.38",
+    "@vue/reactivity": "3.5.38",
+    "@vue/runtime-core": "3.5.38",
+    "@vue/runtime-dom": "3.5.38",
+    "@vue/shared": "3.5.38",
+    "csstype": "3.2.3",
+    "entities": "7.0.1",
+    "estree-walker": "2.0.2",
+    "source-map-js": "1.2.1",
+    "vue": "3.5.38"
+  }
 }
