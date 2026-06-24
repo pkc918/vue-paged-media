@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="vue-paged-media">
+  <rect x="10" y="6" width="34" height="46" rx="3" fill="#42b883"/>
+  <rect x="20" y="16" width="34" height="42" rx="3" fill="#ffffff" stroke="#35495e" stroke-width="4"/>
+  <path d="M27 28h20M27 37h20M27 46h12" stroke="#42b883" stroke-width="4" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,111 @@
+import { fileURLToPath } from "node:url";
+import { defineConfig } from "vitepress";
+import { groupIconMdPlugin, groupIconVitePlugin } from "vitepress-plugin-group-icons";
+
+const zhNav = [
+  { text: "指南", link: "/guide/getting-started" },
+  { text: "Demo", link: "/demo/" },
+];
+
+const zhSidebar = [
+  {
+    text: "指南",
+    items: [{ text: "快速开始", link: "/guide/getting-started" }],
+  },
+  {
+    text: "Demo",
+    items: [
+      { text: "Demo 集合", link: "/demo/" },
+      { text: "基础分页", link: "/demo/basic" },
+      { text: "自定义纸张", link: "/demo/custom-size" },
+      { text: "长内容跨页", link: "/demo/long-content" },
+    ],
+  },
+];
+
+const enNav = [
+  { text: "Guide", link: "/en/guide/getting-started" },
+  { text: "Demo", link: "/en/demo/" },
+];
+
+const enSidebar = [
+  {
+    text: "Guide",
+    items: [{ text: "Getting Started", link: "/en/guide/getting-started" }],
+  },
+  {
+    text: "Demo",
+    items: [
+      { text: "Demo Gallery", link: "/en/demo/" },
+      { text: "Basic Pagination", link: "/en/demo/basic" },
+      { text: "Custom Page Size", link: "/en/demo/custom-size" },
+      { text: "Long Content", link: "/en/demo/long-content" },
+    ],
+  },
+];
+
+export default defineConfig({
+  title: "vue-paged-media",
+  description: "A Vue library for previewing paged media layouts before printing.",
+  lang: "zh-CN",
+  cleanUrls: true,
+  mpa: process.argv.includes("build"),
+  markdown: {
+    config(md) {
+      md.use(groupIconMdPlugin);
+    },
+  },
+  vite: {
+    plugins: [
+      groupIconVitePlugin({
+        customIcon: {
+          vp: "logos:vitejs",
+        },
+      }),
+    ],
+    resolve: {
+      alias: {
+        "vue-paged-media": fileURLToPath(new URL("../../src/index.ts", import.meta.url)),
+      },
+    },
+    build: {
+      minify: false,
+    },
+  },
+  themeConfig: {
+    logo: "/logo.svg",
+    nav: zhNav,
+    sidebar: zhSidebar,
+    langMenuLabel: "切换语言",
+    socialLinks: [{ icon: "github", link: "https://github.com/pkc918/vue-paged-media" }],
+    search: {
+      provider: "local",
+    },
+  },
+  locales: {
+    root: {
+      label: "简体中文",
+      lang: "zh-CN",
+      link: "/",
+      title: "vue-paged-media",
+      description: "用于打印前预览分页媒体布局的 Vue 组件库。",
+      themeConfig: {
+        nav: zhNav,
+        sidebar: zhSidebar,
+        langMenuLabel: "切换语言",
+      },
+    },
+    en: {
+      label: "English",
+      lang: "en-US",
+      link: "/en/",
+      title: "vue-paged-media",
+      description: "A Vue library for previewing paged media layouts before printing.",
+      themeConfig: {
+        nav: enNav,
+        sidebar: enSidebar,
+        langMenuLabel: "Change language",
+      },
+    },
+  },
+});

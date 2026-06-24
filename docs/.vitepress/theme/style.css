@@ -1,0 +1,123 @@
+.vpm-demo {
+  margin: 24px 0;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--vp-c-bg-soft);
+}
+
+.vpm-demo__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--vp-c-divider);
+  color: var(--vp-c-text-2);
+  font-size: 13px;
+}
+
+.vpm-demo__stage {
+  padding: 20px;
+  overflow: auto;
+}
+
+.vpm-demo .vue-paged-media__pages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.vpm-demo .vue-paged-media__page {
+  color: #1f2937;
+  box-shadow: 0 10px 28px rgb(15 23 42 / 0.16);
+}
+
+.vpm-demo article,
+.vpm-demo section {
+  font-size: 9px;
+  line-height: 1.55;
+}
+
+.vpm-demo h1,
+.vpm-demo h2,
+.vpm-demo h3,
+.vpm-demo p {
+  margin: 0;
+}
+
+.vpm-demo h1 {
+  margin-bottom: 5px;
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.vpm-demo h2 {
+  margin: 9px 0 4px;
+  font-size: 11px;
+}
+
+.vpm-demo h3 {
+  margin-bottom: 3px;
+  font-size: 10px;
+}
+
+.vpm-demo p + p {
+  margin-top: 4px;
+}
+
+.vpm-demo ul {
+  margin: 4px 0 0;
+  padding-left: 14px;
+}
+
+.vpm-demo li {
+  margin: 2px 0;
+}
+
+.vpm-demo__report-cover {
+  display: grid;
+  gap: 6px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #d1d5db;
+}
+
+.vpm-demo__eyebrow {
+  color: #047857;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.vpm-demo__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.vpm-demo__metric {
+  padding: 5px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+}
+
+.vpm-demo__metric strong {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 12px;
+}
+
+.vpm-demo__receipt {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+.vpm-demo__receipt-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  border-bottom: 1px dashed #d1d5db;
+  padding: 3px 0;
+}

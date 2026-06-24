@@ -16,6 +16,18 @@ vp install
 vp test
 ```
 
+- Start the documentation site:
+
+```bash
+vp run docs:dev
+```
+
+- Build the documentation site:
+
+```bash
+vp run docs:build
+```
+
 - Build the library:
 
 ```bash

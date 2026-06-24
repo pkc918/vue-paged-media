@@ -1,0 +1,80 @@
+# Getting Started
+
+`vue-paged-media` is a Vue 3 component library for previewing paged media layouts before printing. It creates hidden measuring pages from the page size and margins, then renders the default slot as paginated page previews.
+
+## Installation
+
+::: code-group
+
+```sh [vp]
+$ vp add vue-paged-media
+```
+
+```sh [npm]
+$ npm install vue-paged-media
+```
+
+```sh [pnpm]
+$ pnpm add vue-paged-media
+```
+
+```sh [yarn]
+$ yarn add vue-paged-media
+```
+
+:::
+
+## Basic Usage
+
+```vue
+<script setup lang="ts">
+import { VuePagedMedia } from "vue-paged-media";
+</script>
+
+<template>
+  <VuePagedMedia dimensions="A4" :margin="{ x: 18, y: 24 }">
+    <article>
+      <h1>Quarterly Report</h1>
+      <p>Put the content that needs paged preview here.</p>
+    </article>
+
+    <section>
+      <h2>Details</h2>
+      <p>Each top-level VNode participates in pagination as a content block.</p>
+    </section>
+  </VuePagedMedia>
+</template>
+```
+
+## Props
+
+| Name         | Type                                                                                       | Description                  |
+| ------------ | ------------------------------------------------------------------------------------------ | ---------------------------- |
+| `dimensions` | `"A4" \| "B5" \| { width: number; height: number }`                                        | Page size in millimeters.    |
+| `margin`     | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | Page margins in millimeters. |
+
+## Content Blocks
+
+Top-level nodes in the default slot are treated as content blocks. Fragments are expanded; HTML text is treated as one block; if the text is a JSON string array, it is split into multiple HTML blocks.
+
+When a content block does not fit into the remaining page height, the component tries to split text and nested nodes. A single unsplittable element that is taller than one page is placed on one page and allowed to overflow so pagination can finish.
+
+## Styling
+
+The component renders classes such as `.vue-paged-media__pages`, `.vue-paged-media__page`, and `.vue-paged-media__page-content`. Add preview styling in your application:
+
+```css
+.vue-paged-media__pages {
+  display: grid;
+  gap: 24px;
+  justify-content: center;
+}
+
+.vue-paged-media__page {
+  box-shadow: 0 12px 32px rgb(15 23 42 / 0.16);
+}
+```
+
+## View Demos
+
+Open the [Demo Gallery](/en/demo/) to see rendered effects and source code for different usage patterns.
