@@ -38,9 +38,6 @@ export const VuePagedMedia = defineComponent({
     const measurePageRef = ref<HTMLElement | null>(null);
     const pages = ref<PaginationResult>([]);
     let scheduled = false;
-    let disposed = false;
-    let layoutFrame: number | null = null;
-    let loadListener: (() => void) | null = null;
     let mutationObserver: MutationObserver | null = null;
     let resizeObserver: ResizeObserver | null = null;
 
@@ -97,42 +94,12 @@ export const VuePagedMedia = defineComponent({
     }));
 
     function schedulePagination() {
-      if (disposed || scheduled) return;
+      if (scheduled) return;
       scheduled = true;
       void nextTick(() => {
-        if (disposed) return;
         scheduled = false;
         paginate();
       });
-    }
-
-    function schedulePaginationAfterLayout() {
-      schedulePagination();
-
-      if (typeof window === "undefined" || typeof window.requestAnimationFrame === "undefined") {
-        return;
-      }
-
-      if (layoutFrame !== null) {
-        window.cancelAnimationFrame(layoutFrame);
-      }
-      layoutFrame = window.requestAnimationFrame(() => {
-        layoutFrame = null;
-        schedulePagination();
-      });
-    }
-
-    function schedulePaginationWhenPageIsReady() {
-      if (typeof window !== "undefined" && typeof document !== "undefined") {
-        if (document.readyState === "complete") {
-          schedulePaginationAfterLayout();
-        } else {
-          loadListener = schedulePaginationAfterLayout;
-          window.addEventListener("load", loadListener, { once: true });
-        }
-      }
-
-      void document.fonts?.ready.then(schedulePaginationAfterLayout);
     }
 
     function paginate() {
@@ -170,21 +137,13 @@ export const VuePagedMedia = defineComponent({
 
     onMounted(() => {
       observeSource();
-      schedulePaginationAfterLayout();
-      schedulePaginationWhenPageIsReady();
+      schedulePagination();
     });
     onUpdated(() => {
       observeSource();
       schedulePagination();
     });
     onBeforeUnmount(() => {
-      disposed = true;
-      if (layoutFrame !== null && typeof window !== "undefined") {
-        window.cancelAnimationFrame(layoutFrame);
-      }
-      if (loadListener && typeof window !== "undefined") {
-        window.removeEventListener("load", loadListener);
-      }
       mutationObserver?.disconnect();
       resizeObserver?.disconnect();
     });

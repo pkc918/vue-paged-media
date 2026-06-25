@@ -42,17 +42,12 @@ const enSidebar = [
   },
 ];
 
-const isDev = process.argv.includes("dev");
-const base = process.env.DOCS_BASE || "/";
-
 export default defineConfig({
   title: "vue-paged-media",
   description: "A Vue library for previewing paged media layouts before printing.",
   lang: "zh-CN",
-  base,
+  base: process.env.DOCS_BASE || "/",
   cleanUrls: true,
-  mpa: !isDev,
-  head: isDev ? [] : [["script", { type: "module", src: `${base}vpm-docs-pagination.js` }]],
   markdown: {
     config(md) {
       md.use(groupIconMdPlugin);

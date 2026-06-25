@@ -42,12 +42,15 @@
     "oxc-minify": "^0.137.0",
     "typescript": "^6.0.3",
     "vite-plus": "^0.1.20",
-    "vitepress": "^2.0.0-alpha.17",
+    "vitepress": "^1.6.4",
     "vitepress-plugin-group-icons": "^1.7.5",
     "vue": "^3.5.38"
   },
   "overrides": {
     "vite": "npm:@voidzero-dev/vite-plus-core@latest",
+    "vitepress": {
+      "vite": "^5.4.19"
+    },
     "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
   },
   "packageManager": "npm@11.16.0",
