@@ -4,9 +4,11 @@ import {
   defineComponent,
   h,
   nextTick,
+  onBeforeUnmount,
   onMounted,
   onUpdated,
   ref,
+  watch,
   type CSSProperties,
   type PropType,
 } from "vue";
@@ -19,6 +21,50 @@ import {
   normalizeContentBlocks,
   paginateSourceBlocks,
 } from "./utils/index.ts";
+
+const contentResetCss = `
+.vue-paged-media__source,
+.vue-paged-media__measure-page,
+.vue-paged-media__page-content {
+  font-size: 12px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.vue-paged-media .vue-paged-media__source *,
+.vue-paged-media .vue-paged-media__measure-page *,
+.vue-paged-media .vue-paged-media__page-content * {
+  box-sizing: border-box;
+  font-size: inherit;
+  line-height: inherit;
+  margin: 0;
+  max-width: 100%;
+}
+
+.vue-paged-media__source table,
+.vue-paged-media__measure-page table,
+.vue-paged-media__page-content table {
+  width: 100% !important;
+  table-layout: fixed;
+}
+
+.vue-paged-media__source img,
+.vue-paged-media__source svg,
+.vue-paged-media__source canvas,
+.vue-paged-media__source video,
+.vue-paged-media__measure-page img,
+.vue-paged-media__measure-page svg,
+.vue-paged-media__measure-page canvas,
+.vue-paged-media__measure-page video,
+.vue-paged-media__page-content img,
+.vue-paged-media__page-content svg,
+.vue-paged-media__page-content canvas,
+.vue-paged-media__page-content video {
+  height: auto;
+  max-width: 100%;
+}
+`;
 
 export const VuePagedMedia = defineComponent({
   name: "VuePagedMedia",
@@ -37,6 +83,8 @@ export const VuePagedMedia = defineComponent({
     const measurePageRef = ref<HTMLElement | null>(null);
     const pages = ref<PaginationResult>([]);
     let scheduled = false;
+    let mutationObserver: MutationObserver | null = null;
+    let resizeObserver: ResizeObserver | null = null;
 
     const pageSize = computed(() => getPageSize(props.dimensions));
     const pageMargin = computed(() => getMargin(props.margin));
@@ -46,8 +94,9 @@ export const VuePagedMedia = defineComponent({
     }));
 
     const pageStyle = computed<CSSProperties>(() => ({
+      flex: "0 0 auto",
       width: `${pageSize.value.width}mm`,
-      minHeight: `${pageSize.value.height}mm`,
+      height: `${pageSize.value.height}mm`,
       boxSizing: "border-box",
       padding: `${pageMargin.value.top}mm ${pageMargin.value.right}mm ${pageMargin.value.bottom}mm ${pageMargin.value.left}mm`,
       background: "#fff",
@@ -56,7 +105,15 @@ export const VuePagedMedia = defineComponent({
 
     const contentStyle = computed<CSSProperties>(() => ({
       width: `${contentSize.value.width}mm`,
-      minHeight: `${contentSize.value.height}mm`,
+      height: `${contentSize.value.height}mm`,
+      boxSizing: "border-box",
+      overflow: "hidden",
+      overflowWrap: "anywhere",
+      wordBreak: "break-word",
+    }));
+
+    const sourceBlockStyle = computed<CSSProperties>(() => ({
+      width: `${contentSize.value.width}mm`,
       boxSizing: "border-box",
     }));
 
@@ -93,13 +150,47 @@ export const VuePagedMedia = defineComponent({
       }
     }
 
-    onMounted(schedulePagination);
-    onUpdated(schedulePagination);
+    function observeSource() {
+      mutationObserver?.disconnect();
+      resizeObserver?.disconnect();
+      const source = sourceRef.value;
+      if (!source) return;
+
+      if (typeof MutationObserver !== "undefined") {
+        mutationObserver = new MutationObserver(schedulePagination);
+        mutationObserver.observe(source, {
+          attributes: true,
+          characterData: true,
+          childList: true,
+          subtree: true,
+        });
+      }
+
+      if (typeof ResizeObserver !== "undefined") {
+        resizeObserver = new ResizeObserver(schedulePagination);
+        resizeObserver.observe(source);
+      }
+    }
+
+    onMounted(() => {
+      observeSource();
+      schedulePagination();
+    });
+    onUpdated(() => {
+      observeSource();
+      schedulePagination();
+    });
+    onBeforeUnmount(() => {
+      mutationObserver?.disconnect();
+      resizeObserver?.disconnect();
+    });
+    watch(() => [props.dimensions, props.margin], schedulePagination, { deep: true });
 
     return () => {
       const blocks = normalizeContentBlocks(slots.default?.() ?? []);
 
       return h("div", { class: "vue-paged-media" }, [
+        h("style", contentResetCss),
         h(
           "div",
           {
@@ -112,7 +203,7 @@ export const VuePagedMedia = defineComponent({
             const common = {
               key: index,
               [contentBlockAttribute]: "",
-              style: contentStyle.value,
+              style: sourceBlockStyle.value,
             };
             return typeof block === "string"
               ? h("div", { ...common, innerHTML: block })
@@ -128,38 +219,15 @@ export const VuePagedMedia = defineComponent({
         h(
           "div",
           { class: "vue-paged-media__pages" },
-          pages.value.length > 0
-            ? pages.value.map((page, index) =>
-                h(
-                  "section",
-                  { key: index, class: "vue-paged-media__page", style: pageStyle.value },
-                  [
-                    h("div", {
-                      class: "vue-paged-media__page-content",
-                      style: contentStyle.value,
-                      innerHTML: page.join(""),
-                    }),
-                  ],
-                ),
-              )
-            : blocks.map((block, index) =>
-                h(
-                  "section",
-                  { key: index, class: "vue-paged-media__page", style: pageStyle.value },
-                  [
-                    h(
-                      "div",
-                      {
-                        class: "vue-paged-media__page-content",
-                        style: contentStyle.value,
-                      },
-                      typeof block === "string"
-                        ? h("div", { innerHTML: block })
-                        : cloneVNode(block),
-                    ),
-                  ],
-                ),
-              ),
+          pages.value.map((page, index) =>
+            h("section", { key: index, class: "vue-paged-media__page", style: pageStyle.value }, [
+              h("div", {
+                class: "vue-paged-media__page-content",
+                style: contentStyle.value,
+                innerHTML: page.join(""),
+              }),
+            ]),
+          ),
         ),
       ]);
     };
