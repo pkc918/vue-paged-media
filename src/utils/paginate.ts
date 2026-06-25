@@ -1,5 +1,4 @@
-import type { NodeSplitResult } from "../types/block.ts";
-import type { PaginationResult } from "../types/pagination.ts";
+import type { NodeSplitResult, PaginationResult } from "../types/index.ts";
 import { contentBlockAttribute } from "./content.ts";
 
 export function paginateSourceBlocks(

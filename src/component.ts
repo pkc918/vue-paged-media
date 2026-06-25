@@ -12,8 +12,7 @@ import {
   type CSSProperties,
   type PropType,
 } from "vue";
-import type { PageDimensions, PageMarginInput } from "./types/page.ts";
-import type { PaginationResult } from "./types/pagination.ts";
+import type { PageDimensions, PageMarginInput, PaginationResult } from "./types/index.ts";
 import {
   getMargin,
   getPageSize,
@@ -21,50 +20,6 @@ import {
   normalizeContentBlocks,
   paginateSourceBlocks,
 } from "./utils/index.ts";
-
-const contentResetCss = `
-.vue-paged-media__source,
-.vue-paged-media__measure-page,
-.vue-paged-media__page-content {
-  font-size: 12px;
-  line-height: 1.35;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
-.vue-paged-media .vue-paged-media__source *,
-.vue-paged-media .vue-paged-media__measure-page *,
-.vue-paged-media .vue-paged-media__page-content * {
-  box-sizing: border-box;
-  font-size: inherit;
-  line-height: inherit;
-  margin: 0;
-  max-width: 100%;
-}
-
-.vue-paged-media__source table,
-.vue-paged-media__measure-page table,
-.vue-paged-media__page-content table {
-  width: 100% !important;
-  table-layout: fixed;
-}
-
-.vue-paged-media__source img,
-.vue-paged-media__source svg,
-.vue-paged-media__source canvas,
-.vue-paged-media__source video,
-.vue-paged-media__measure-page img,
-.vue-paged-media__measure-page svg,
-.vue-paged-media__measure-page canvas,
-.vue-paged-media__measure-page video,
-.vue-paged-media__page-content img,
-.vue-paged-media__page-content svg,
-.vue-paged-media__page-content canvas,
-.vue-paged-media__page-content video {
-  height: auto;
-  max-width: 100%;
-}
-`;
 
 export const VuePagedMedia = defineComponent({
   name: "VuePagedMedia",
@@ -190,7 +145,6 @@ export const VuePagedMedia = defineComponent({
       const blocks = normalizeContentBlocks(slots.default?.() ?? []);
 
       return h("div", { class: "vue-paged-media" }, [
-        h("style", contentResetCss),
         h(
           "div",
           {

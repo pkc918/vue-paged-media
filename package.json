@@ -18,13 +18,14 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.mjs",
+    "./style.css": "./dist/style.css",
     "./package.json": "./package.json"
   },
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "build": "vp pack",
+    "build": "vp pack && cp src/style.css dist/style.css",
     "dev": "vp pack --watch",
     "docs:build": "node scripts/clean-docs.mjs && DOCS_MPA=1 vitepress build docs",
     "docs:dev": "vitepress dev docs --host 127.0.0.1",

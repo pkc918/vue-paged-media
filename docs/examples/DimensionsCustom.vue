@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { VuePagedMedia } from "vue-paged-media";
+import "vue-paged-media/style.css";
 import data from "../public/data.json";
 </script>
 

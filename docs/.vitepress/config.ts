@@ -65,6 +65,7 @@ export default defineConfig({
     ],
     resolve: {
       alias: {
+        "vue-paged-media/style.css": fileURLToPath(new URL("../../src/style.css", import.meta.url)),
         "vue-paged-media": fileURLToPath(new URL("../../src/index.ts", import.meta.url)),
       },
     },
