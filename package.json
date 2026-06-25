@@ -27,7 +27,7 @@
   "scripts": {
     "build": "vp pack && cp src/style.css dist/style.css",
     "dev": "vp pack --watch",
-    "docs:build": "node scripts/clean-docs.mjs && DOCS_MPA=1 vitepress build docs",
+    "docs:build": "node scripts/clean-docs.mjs && vitepress build docs",
     "docs:dev": "vitepress dev docs --host 127.0.0.1",
     "docs:preview": "vitepress preview docs --host 127.0.0.1",
     "test": "vp test",
