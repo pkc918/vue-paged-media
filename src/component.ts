@@ -17,9 +17,13 @@ import {
   getMargin,
   getPageSize,
   contentBlockAttribute,
+  normalizeColumnCount,
+  normalizeColumnGap,
   normalizeContentBlocks,
   paginateSourceBlocks,
 } from "./utils/index.ts";
+
+type ColumnRule = boolean | string | CSSProperties;
 
 export const VuePagedMedia = defineComponent({
   name: "VuePagedMedia",
@@ -31,6 +35,18 @@ export const VuePagedMedia = defineComponent({
     margin: {
       type: Object as PropType<PageMarginInput>,
       required: true,
+    },
+    column: {
+      type: Number,
+      default: 1,
+    },
+    columnGap: {
+      type: Number,
+      default: 6,
+    },
+    columnRule: {
+      type: [Boolean, String, Object] as PropType<ColumnRule>,
+      default: false,
     },
   },
   setup(props, { slots }) {
@@ -46,6 +62,12 @@ export const VuePagedMedia = defineComponent({
     const contentSize = computed(() => ({
       width: pageSize.value.width - pageMargin.value.left - pageMargin.value.right,
       height: pageSize.value.height - pageMargin.value.top - pageMargin.value.bottom,
+    }));
+    const columnCount = computed(() => normalizeColumnCount(props.column));
+    const columnGap = computed(() => normalizeColumnGap(props.columnGap));
+    const columnSize = computed(() => ({
+      width: getColumnWidth(contentSize.value.width, columnCount.value, columnGap.value),
+      height: contentSize.value.height,
     }));
 
     const pageStyle = computed<CSSProperties>(() => ({
@@ -63,20 +85,32 @@ export const VuePagedMedia = defineComponent({
       height: `${contentSize.value.height}mm`,
       boxSizing: "border-box",
       overflow: "hidden",
-      overflowWrap: "anywhere",
-      wordBreak: "break-word",
+      display: "flex",
+      gap: `${columnGap.value}mm`,
+      position: "relative",
     }));
 
     const fallbackContentStyle = computed<CSSProperties>(() => ({
       width: `${contentSize.value.width}mm`,
       minHeight: `${contentSize.value.height}mm`,
       boxSizing: "border-box",
+      display: "flex",
+      gap: `${columnGap.value}mm`,
+      position: "relative",
+    }));
+
+    const columnStyle = computed<CSSProperties>(() => ({
+      flex: `0 0 ${columnSize.value.width}mm`,
+      width: `${columnSize.value.width}mm`,
+      height: `${columnSize.value.height}mm`,
+      boxSizing: "border-box",
+      overflow: "hidden",
       overflowWrap: "anywhere",
       wordBreak: "break-word",
     }));
 
     const sourceBlockStyle = computed<CSSProperties>(() => ({
-      width: `${contentSize.value.width}mm`,
+      width: `${columnSize.value.width}mm`,
       boxSizing: "border-box",
     }));
 
@@ -84,14 +118,33 @@ export const VuePagedMedia = defineComponent({
       position: "absolute",
       left: "-10000px",
       top: "0",
-      width: `${contentSize.value.width}mm`,
-      height: `${contentSize.value.height}mm`,
+      width: `${columnSize.value.width}mm`,
+      height: `${columnSize.value.height}mm`,
       overflow: "hidden",
       visibility: "hidden",
       pointerEvents: "none",
       zIndex: "-1",
       boxSizing: "border-box",
     }));
+
+    const columnRuleStyle = computed<CSSProperties | null>(() => {
+      if (columnCount.value < 2 || props.columnRule === false) return null;
+
+      const defaultStyle: CSSProperties = {
+        position: "absolute",
+        top: "0",
+        bottom: "0",
+        width: "0",
+        borderLeft: "0.2mm solid #d1d5db",
+        pointerEvents: "none",
+      };
+
+      if (props.columnRule === true) return defaultStyle;
+      if (typeof props.columnRule === "string") {
+        return { ...defaultStyle, borderLeft: props.columnRule };
+      }
+      return { ...defaultStyle, ...props.columnRule };
+    });
 
     function schedulePagination() {
       if (scheduled) return;
@@ -107,7 +160,9 @@ export const VuePagedMedia = defineComponent({
       const measurePage = measurePageRef.value;
       if (!source || !measurePage) return;
 
-      const nextPages = paginateSourceBlocks(source, measurePage);
+      const nextPages = paginateSourceBlocks(source, measurePage, {
+        columnCount: columnCount.value,
+      });
       if (JSON.stringify(pages.value) !== JSON.stringify(nextPages)) {
         pages.value = nextPages;
       }
@@ -147,7 +202,13 @@ export const VuePagedMedia = defineComponent({
       mutationObserver?.disconnect();
       resizeObserver?.disconnect();
     });
-    watch(() => [props.dimensions, props.margin], schedulePagination, { deep: true });
+    watch(
+      () => [props.dimensions, props.margin, props.column, props.columnGap],
+      schedulePagination,
+      {
+        deep: true,
+      },
+    );
 
     return () => {
       const blocks = normalizeContentBlocks(slots.default?.() ?? []);
@@ -187,11 +248,21 @@ export const VuePagedMedia = defineComponent({
                   "section",
                   { key: index, class: "vue-paged-media__page", style: pageStyle.value },
                   [
-                    h("div", {
-                      class: "vue-paged-media__page-content",
-                      style: contentStyle.value,
-                      innerHTML: page.join(""),
-                    }),
+                    h(
+                      "div",
+                      {
+                        class: "vue-paged-media__page-content",
+                        style: contentStyle.value,
+                      },
+                      Array.from({ length: columnCount.value }, (_, columnIndex) =>
+                        h("div", {
+                          key: columnIndex,
+                          class: "vue-paged-media__column",
+                          style: columnStyle.value,
+                          innerHTML: (page[columnIndex] ?? []).join(""),
+                        }),
+                      ).concat(renderColumnRules()),
+                    ),
                   ],
                 ),
               )
@@ -206,9 +277,19 @@ export const VuePagedMedia = defineComponent({
                         class: "vue-paged-media__page-content",
                         style: fallbackContentStyle.value,
                       },
-                      typeof block === "string"
-                        ? h("div", { innerHTML: block })
-                        : cloneVNode(block),
+                      [
+                        h(
+                          "div",
+                          {
+                            class: "vue-paged-media__column",
+                            style: columnStyle.value,
+                          },
+                          typeof block === "string"
+                            ? h("div", { innerHTML: block })
+                            : cloneVNode(block),
+                        ),
+                        ...renderColumnRules(),
+                      ],
                     ),
                   ],
                 ),
@@ -216,5 +297,31 @@ export const VuePagedMedia = defineComponent({
         ),
       ]);
     };
+
+    function renderColumnRules() {
+      const style = columnRuleStyle.value;
+      if (!style) return [];
+
+      return Array.from({ length: columnCount.value - 1 }, (_, index) =>
+        h("div", {
+          key: `rule-${index}`,
+          class: "vue-paged-media__column-rule",
+          style: {
+            ...style,
+            left: `${getColumnRuleOffset(index, columnSize.value.width, columnGap.value)}mm`,
+          },
+          "aria-hidden": "true",
+        }),
+      );
+    }
   },
 });
+
+function getColumnWidth(contentWidth: number, columnCount: number, columnGap: number): number {
+  const totalGap = columnGap * (columnCount - 1);
+  return Math.max(0, (contentWidth - totalGap) / columnCount);
+}
+
+function getColumnRuleOffset(columnIndex: number, columnWidth: number, columnGap: number): number {
+  return columnWidth * (columnIndex + 1) + columnGap * (columnIndex + 0.5);
+}

@@ -20,6 +20,16 @@ export function getMargin(margin: PageMargin | AxisPageMargin): PageMargin {
   return createMarginFromSides(margin);
 }
 
+export function normalizeColumnCount(column: number | undefined): number {
+  if (column === undefined || !Number.isFinite(column)) return 1;
+  return Math.max(1, Math.floor(column));
+}
+
+export function normalizeColumnGap(columnGap: number | undefined): number {
+  if (columnGap === undefined || !Number.isFinite(columnGap)) return 6;
+  return Math.max(0, columnGap);
+}
+
 function isAxisPageMargin(margin: PageMargin | AxisPageMargin): margin is AxisPageMargin {
   return "x" in margin && "y" in margin;
 }
