@@ -24,3 +24,9 @@ export class AxisPageMargin {
 export type PageDimensions = PresetPageSize | PageSize;
 
 export type PageMarginInput = PageMargin | AxisPageMargin;
+
+export interface PageMarginSlotProps {
+  index: number;
+  pageNumber: number;
+  pageCount: number;
+}

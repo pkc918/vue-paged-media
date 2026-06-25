@@ -33,9 +33,16 @@ import "vue-paged-media/style.css";
 </script>
 
 <template>
-  <VuePagedMedia dimensions="A4" :margin="{ x: 18, y: 24 }">
+  <VuePagedMedia dimensions="A4" :margin="{ x: 18, y: 24 }" :corner="8">
+    <template #header="{ index }">Header for page {{ index + 1 }}</template>
+    <template #footer="{ pageNumber, pageCount }">{{ pageNumber }} / {{ pageCount }}</template>
+    <template #top-left-corner>TL</template>
+    <template #top-right-corner>TR</template>
+    <template #bottom-left-corner>BL</template>
+    <template #bottom-right-corner>BR</template>
+
     <article>
-      <h1>Quarterly Report</h1>
+      <h1>hello vue-paged-media</h1>
       <p>Put the content that needs paged preview here.</p>
     </article>
 
@@ -49,13 +56,14 @@ import "vue-paged-media/style.css";
 
 ## Props
 
-| Name         | Type                                                                                       | Description                                                                                                     |
-| ------------ | ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
-| `dimensions` | `"A4" \| "B5" \| { width: number; height: number }`                                        | Page size in millimeters.                                                                                       |
-| `margin`     | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | Page margins in millimeters.                                                                                    |
-| `column`     | `number`                                                                                   | Number of content columns on each page. Defaults to `1`.                                                        |
-| `columnGap`  | `number`                                                                                   | Gap between columns in millimeters. Defaults to `6`.                                                            |
-| `columnRule` | `boolean \| string \| CSSProperties`                                                       | Divider between columns. Pass `true` for the default divider, or pass a string or style object to customize it. |
+| Name         | Type                                                                                       | Description                                                                                                                                   |
+| ------------ | ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `dimensions` | `"A4" \| "B5" \| { width: number; height: number }`                                        | Page size in millimeters.                                                                                                                     |
+| `margin`     | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | Page margins in millimeters.                                                                                                                  |
+| `column`     | `number`                                                                                   | Number of content columns on each page. Defaults to `1`.                                                                                      |
+| `columnGap`  | `number`                                                                                   | Gap between columns in millimeters. Defaults to `6`.                                                                                          |
+| `columnRule` | `boolean \| string \| CSSProperties`                                                       | Divider between columns. Pass `true` for the default divider, or pass a string or style object to customize it.                               |
+| `corner`     | `number`                                                                                   | Corner square size in millimeters. The side slot thickness uses the same value. It does not reserve space when no page margin slots are used. |
 
 ## Pagination Content
 
@@ -64,6 +72,23 @@ Top-level nodes in the default slot are treated as content blocks. Fragments are
 When a content block does not fit into the remaining page height, the component tries to split text and nested nodes. A single unsplittable element that is taller than one page is placed on one page and allowed to overflow so pagination can finish.
 
 When `column` is set, each page content area is split into that many columns. Content fills the current column first, continues in the next column when it is full, and moves to the first column of the next page after all columns on the current page are full. `columnGap` participates in column width calculation, while `columnRule` only controls the divider style and does not affect pagination measurement.
+
+## Page Margin Slots
+
+The component can render repeated page headers, footers, side content, and corner marks on each page edge. These slots do not participate in content pagination measurement. The four corner marks are fixed squares sized by `corner`, and the header, footer, left, and right slots use the same value as their thickness. Together they form one connected page-edge area. Each page is composed from the page margin slot area and a body content container. `margin` is applied only inside that body container and represents the distance between body content and the inner edge of the page margin slots. When no page margin slots are used, `margin` represents the distance between body content and the page edge.
+
+| Slot                  | Area                      |
+| --------------------- | ------------------------- |
+| `header`              | Top page margin center    |
+| `footer`              | Bottom page margin center |
+| `left`                | Left page margin center   |
+| `right`               | Right page margin center  |
+| `top-left-corner`     | Top-left corner mark      |
+| `top-right-corner`    | Top-right corner mark     |
+| `bottom-left-corner`  | Bottom-left corner mark   |
+| `bottom-right-corner` | Bottom-right corner mark  |
+
+Each page margin slot receives `{ index, pageNumber, pageCount }`; `index` starts at `0`.
 
 ## View Demos
 

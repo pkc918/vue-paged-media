@@ -8,43 +8,45 @@ const { version } = JSON.parse(
 );
 
 const zhNav = [
-  { text: "指南", link: "/guide/getting-started" },
-  { text: "Demo", link: "/demo/" },
+  { text: "指南", link: "/zh/guide/getting-started" },
+  { text: "Demo", link: "/zh/demo/" },
 ];
 
 const zhSidebar = [
   {
     text: "指南",
-    items: [{ text: "快速开始", link: "/guide/getting-started" }],
+    items: [{ text: "快速开始", link: "/zh/guide/getting-started" }],
   },
   {
     text: "Demo",
     items: [
-      { text: "Demo 集合", link: "/demo/" },
-      { text: "Dimensions", link: "/demo/dimensions" },
-      { text: "Margin", link: "/demo/margin" },
-      { text: "Column", link: "/demo/column" },
+      { text: "Demo 集合", link: "/zh/demo/" },
+      { text: "Dimensions", link: "/zh/demo/dimensions" },
+      { text: "Margin", link: "/zh/demo/margin" },
+      { text: "Column", link: "/zh/demo/column" },
+      { text: "页边插槽", link: "/zh/demo/page-margin-slots" },
     ],
   },
 ];
 
 const enNav = [
-  { text: "Guide", link: "/en/guide/getting-started" },
-  { text: "Demo", link: "/en/demo/" },
+  { text: "Guide", link: "/guide/getting-started" },
+  { text: "Demo", link: "/demo/" },
 ];
 
 const enSidebar = [
   {
     text: "Guide",
-    items: [{ text: "Getting Started", link: "/en/guide/getting-started" }],
+    items: [{ text: "Getting Started", link: "/guide/getting-started" }],
   },
   {
     text: "Demo",
     items: [
-      { text: "Demo Gallery", link: "/en/demo/" },
-      { text: "Dimensions", link: "/en/demo/dimensions" },
-      { text: "Margin", link: "/en/demo/margin" },
-      { text: "Column", link: "/en/demo/column" },
+      { text: "Demo Gallery", link: "/demo/" },
+      { text: "Dimensions", link: "/demo/dimensions" },
+      { text: "Margin", link: "/demo/margin" },
+      { text: "Column", link: "/demo/column" },
+      { text: "Page Margin Slots", link: "/demo/page-margin-slots" },
     ],
   },
 ];
@@ -52,7 +54,7 @@ const enSidebar = [
 export default defineConfig({
   title: "vue-paged-media",
   description: "A Vue library for previewing paged media layouts before printing.",
-  lang: "zh-CN",
+  lang: "en-US",
   base: process.env.DOCS_BASE || "/",
   cleanUrls: true,
   markdown: {
@@ -78,11 +80,11 @@ export default defineConfig({
   themeConfig: {
     logo: "/logo.svg",
     nav: [
-      ...zhNav,
+      ...enNav,
       { text: `v${version}`, link: "https://github.com/pkc918/vue-paged-media/releases" },
     ],
-    sidebar: zhSidebar,
-    langMenuLabel: "切换语言",
+    sidebar: enSidebar,
+    langMenuLabel: "Change language",
     socialLinks: [{ icon: "github", link: "https://github.com/pkc918/vue-paged-media" }],
     search: {
       provider: "local",
@@ -90,24 +92,9 @@ export default defineConfig({
   },
   locales: {
     root: {
-      label: "简体中文",
-      lang: "zh-CN",
-      link: "/",
-      title: "vue-paged-media",
-      description: "用于打印前预览分页媒体布局的 Vue 组件库。",
-      themeConfig: {
-        nav: [
-          ...zhNav,
-          { text: `v${version}`, link: "https://github.com/pkc918/vue-paged-media/releases" },
-        ],
-        sidebar: zhSidebar,
-        langMenuLabel: "切换语言",
-      },
-    },
-    en: {
       label: "English",
       lang: "en-US",
-      link: "/en/",
+      link: "/",
       title: "vue-paged-media",
       description: "A Vue library for previewing paged media layouts before printing.",
       themeConfig: {
@@ -117,6 +104,21 @@ export default defineConfig({
         ],
         sidebar: enSidebar,
         langMenuLabel: "Change language",
+      },
+    },
+    zh: {
+      label: "简体中文",
+      lang: "zh-CN",
+      link: "/zh/",
+      title: "vue-paged-media",
+      description: "用于打印前预览分页媒体布局的 Vue 组件库。",
+      themeConfig: {
+        nav: [
+          ...zhNav,
+          { text: `v${version}`, link: "https://github.com/pkc918/vue-paged-media/releases" },
+        ],
+        sidebar: zhSidebar,
+        langMenuLabel: "切换语言",
       },
     },
   },
