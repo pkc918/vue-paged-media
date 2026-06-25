@@ -11,7 +11,7 @@ import data from "../public/data.json";
     :column="2"
     :column-gap="6"
     column-rule
-    :page-margin-slot-size="8"
+    :corner="8"
   >
     <template #header="{ pageNumber }">
       <div class="page-margin-demo__header">

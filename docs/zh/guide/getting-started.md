@@ -33,7 +33,7 @@ import "vue-paged-media/style.css";
 </script>
 
 <template>
-  <VuePagedMedia dimensions="A4" :margin="{ x: 18, y: 24 }" :page-margin-slot-size="8">
+  <VuePagedMedia dimensions="A4" :margin="{ x: 18, y: 24 }" :corner="8">
     <template #header="{ index }">第 {{ index + 1 }} 页页眉</template>
     <template #footer="{ pageNumber, pageCount }">{{ pageNumber }} / {{ pageCount }}</template>
     <template #top-left-corner>密</template>
@@ -56,14 +56,14 @@ import "vue-paged-media/style.css";
 
 ## Props
 
-| 名称                 | 类型                                                                                       | 说明                                                           |
-| -------------------- | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------- |
-| `dimensions`         | `"A4" \| "B5" \| { width: number; height: number }`                                        | 页面尺寸，单位为毫米。                                         |
-| `margin`             | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | 页边距，单位为毫米。                                           |
-| `column`             | `number`                                                                                   | 每页内容栏数，默认 `1`。                                       |
-| `columnGap`          | `number`                                                                                   | 栏间距，单位为毫米，默认 `6`。                                 |
-| `columnRule`         | `boolean \| string \| CSSProperties`                                                       | 栏间竖线。传 `true` 使用默认竖线，传字符串或样式对象可自定义。 |
-| `pageMarginSlotSize` | `number`                                                                                   | 页边插槽厚度，单位为毫米；未使用页边插槽时不占用空间。         |
+| 名称         | 类型                                                                                       | 说明                                                                             |
+| ------------ | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| `dimensions` | `"A4" \| "B5" \| { width: number; height: number }`                                        | 页面尺寸，单位为毫米。                                                           |
+| `margin`     | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | 页边距，单位为毫米。                                                             |
+| `column`     | `number`                                                                                   | 每页内容栏数，默认 `1`。                                                         |
+| `columnGap`  | `number`                                                                                   | 栏间距，单位为毫米，默认 `6`。                                                   |
+| `columnRule` | `boolean \| string \| CSSProperties`                                                       | 栏间竖线。传 `true` 使用默认竖线，传字符串或样式对象可自定义。                   |
+| `corner`     | `number`                                                                                   | 角标方形尺寸，单位为毫米；四边插槽厚度使用同一个值；未使用页边插槽时不占用空间。 |
 
 ## 分页内容
 
@@ -75,7 +75,7 @@ import "vue-paged-media/style.css";
 
 ## 页边插槽
 
-组件支持在每一页的纸张边缘渲染页眉、页脚、侧边内容和四个角标，这些插槽不会参与正文分页测量。四边和四角会组成一圈互相贴合的页边区域，厚度由 `pageMarginSlotSize` 控制。每页由页边插槽区域和正文 container 共同组成纸张大小，`margin` 只在正文 container 内部生效，表示正文内容与页边插槽内侧之间的距离。未使用页边插槽时，`margin` 表示正文内容与纸张边缘之间的距离。
+组件支持在每一页的纸张边缘渲染页眉、页脚、侧边内容和四个角标，这些插槽不会参与正文分页测量。四个角标是固定方形，尺寸由 `corner` 控制；页眉、页脚、左侧和右侧插槽使用同一个值作为厚度，并共同组成一圈互相贴合的页边区域。每页由页边插槽区域和正文 container 共同组成纸张大小，`margin` 只在正文 container 内部生效，表示正文内容与页边插槽内侧之间的距离。未使用页边插槽时，`margin` 表示正文内容与纸张边缘之间的距离。
 
 | 插槽名                | 区域           |
 | --------------------- | -------------- |

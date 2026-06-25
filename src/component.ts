@@ -64,7 +64,7 @@ export const VuePagedMedia = defineComponent({
       type: [Boolean, String, Object] as PropType<ColumnRule>,
       default: false,
     },
-    pageMarginSlotSize: {
+    corner: {
       type: Number,
       default: undefined,
     },
@@ -79,15 +79,15 @@ export const VuePagedMedia = defineComponent({
 
     const pageSize = computed(() => getPageSize(props.dimensions));
     const pageMargin = computed(() => getMargin(props.margin));
-    const pageMarginSlotSize = computed(() => {
+    const cornerSize = computed(() => {
       if (!hasPageMarginSlots()) return 0;
-      return Math.max(0, props.pageMarginSlotSize ?? 8);
+      return Math.max(0, props.corner ?? 8);
     });
     const pageInset = computed(() => ({
-      top: pageMargin.value.top + pageMarginSlotSize.value,
-      right: pageMargin.value.right + pageMarginSlotSize.value,
-      bottom: pageMargin.value.bottom + pageMarginSlotSize.value,
-      left: pageMargin.value.left + pageMarginSlotSize.value,
+      top: pageMargin.value.top + cornerSize.value,
+      right: pageMargin.value.right + cornerSize.value,
+      bottom: pageMargin.value.bottom + cornerSize.value,
+      left: pageMargin.value.left + cornerSize.value,
     }));
     const contentSize = computed(() => ({
       width: pageSize.value.width - pageInset.value.left - pageInset.value.right,
@@ -112,10 +112,10 @@ export const VuePagedMedia = defineComponent({
 
     const contentContainerStyle = computed<CSSProperties>(() => ({
       position: "absolute",
-      top: `${pageMarginSlotSize.value}mm`,
-      right: `${pageMarginSlotSize.value}mm`,
-      bottom: `${pageMarginSlotSize.value}mm`,
-      left: `${pageMarginSlotSize.value}mm`,
+      top: `${cornerSize.value}mm`,
+      right: `${cornerSize.value}mm`,
+      bottom: `${cornerSize.value}mm`,
+      left: `${cornerSize.value}mm`,
       boxSizing: "border-box",
       padding: `${pageMargin.value.top}mm ${pageMargin.value.right}mm ${pageMargin.value.bottom}mm ${pageMargin.value.left}mm`,
       overflow: "hidden",
@@ -244,13 +244,7 @@ export const VuePagedMedia = defineComponent({
       resizeObserver?.disconnect();
     });
     watch(
-      () => [
-        props.dimensions,
-        props.margin,
-        props.column,
-        props.columnGap,
-        props.pageMarginSlotSize,
-      ],
+      () => [props.dimensions, props.margin, props.column, props.columnGap, props.corner],
       schedulePagination,
       {
         deep: true,
@@ -372,7 +366,7 @@ export const VuePagedMedia = defineComponent({
         pageNumber: index + 1,
         pageCount,
       };
-      const slotSize = pageMarginSlotSize.value;
+      const slotSize = cornerSize.value;
 
       return [
         renderPageMarginSlot("top-left-corner", slotProps, {

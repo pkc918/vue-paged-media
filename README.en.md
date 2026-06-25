@@ -29,7 +29,7 @@ import "vue-paged-media/style.css";
 </script>
 
 <template>
-  <VuePagedMedia dimensions="A4" :margin="{ x: 18, y: 24 }" :page-margin-slot-size="8">
+  <VuePagedMedia dimensions="A4" :margin="{ x: 18, y: 24 }" :corner="8">
     <template #header="{ index }">Header for page {{ index + 1 }}</template>
     <template #footer="{ pageNumber, pageCount }">{{ pageNumber }} / {{ pageCount }}</template>
     <template #top-left-corner>TL</template>
@@ -52,15 +52,15 @@ import "vue-paged-media/style.css";
 
 ## Props
 
-| Prop                 | Type                                                                                       | Description                                                                                     |
-| -------------------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
-| `dimensions`         | `"A4" \| "B5" \| { width: number; height: number }`                                        | Page size in mm.                                                                                |
-| `margin`             | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | Page margins in mm.                                                                             |
-| `pageMarginSlotSize` | `number`                                                                                   | Page margin slot thickness in mm. It does not reserve space when no page margin slots are used. |
+| Prop         | Type                                                                                       | Description                                                                                                                          |
+| ------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `dimensions` | `"A4" \| "B5" \| { width: number; height: number }`                                        | Page size in mm.                                                                                                                     |
+| `margin`     | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | Page margins in mm.                                                                                                                  |
+| `corner`     | `number`                                                                                   | Corner square size in mm. The side slot thickness uses the same value. It does not reserve space when no page margin slots are used. |
 
 ## Page Margin Slots
 
-The component can render repeated page headers, footers, side content, and corner marks on each page edge. These slots do not participate in content pagination measurement. The four sides and corners form one connected page-edge area, with thickness controlled by `pageMarginSlotSize`. Each page is composed from the page margin slot area and a body content container. `margin` is applied only inside that body container and represents the distance between body content and the inner edge of the page margin slots. When no page margin slots are used, `margin` represents the distance between body content and the page edge.
+The component can render repeated page headers, footers, side content, and corner marks on each page edge. These slots do not participate in content pagination measurement. The four corner marks are fixed squares sized by `corner`, and the header, footer, left, and right slots use the same value as their thickness. Together they form one connected page-edge area. Each page is composed from the page margin slot area and a body content container. `margin` is applied only inside that body container and represents the distance between body content and the inner edge of the page margin slots. When no page margin slots are used, `margin` represents the distance between body content and the page edge.
 
 | Slot                  | Area                      |
 | --------------------- | ------------------------- |
