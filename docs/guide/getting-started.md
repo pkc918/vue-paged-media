@@ -1,8 +1,8 @@
-# 快速开始
+# Getting Started
 
-`vue-paged-media` 是一个 Vue 3 组件，用来预览 paged media 的分页效果。组件会根据纸张尺寸和页边距测量默认插槽中的真实 DOM 内容，再把计算后的分页结果渲染成页面预览。
+`vue-paged-media` is a Vue 3 component for previewing paged media pagination. It measures the real DOM rendered from the default slot with the given page size and margins, then renders the calculated pagination result as page previews.
 
-## 安装
+## Installation
 
 ::: code-group
 
@@ -24,7 +24,7 @@ $ yarn add vue-paged-media
 
 :::
 
-## 预览分页效果
+## Preview Pagination
 
 ```vue
 <script setup lang="ts">
@@ -33,15 +33,22 @@ import "vue-paged-media/style.css";
 </script>
 
 <template>
-  <VuePagedMedia dimensions="A4" :margin="{ x: 18, y: 24 }">
+  <VuePagedMedia dimensions="A4" :margin="{ x: 18, y: 24 }" :page-margin-slot-size="8">
+    <template #header="{ index }">Header for page {{ index + 1 }}</template>
+    <template #footer="{ pageNumber, pageCount }">{{ pageNumber }} / {{ pageCount }}</template>
+    <template #top-left-corner>TL</template>
+    <template #top-right-corner>TR</template>
+    <template #bottom-left-corner>BL</template>
+    <template #bottom-right-corner>BR</template>
+
     <article>
-      <h1>季度报告</h1>
-      <p>这里放入需要分页预览的正文内容。</p>
+      <h1>hello vue-paged-media</h1>
+      <p>Put the content that needs paged preview here.</p>
     </article>
 
     <section>
-      <h2>明细</h2>
-      <p>每个顶层 VNode 会作为一个内容块参与分页。</p>
+      <h2>Details</h2>
+      <p>Each top-level VNode participates in pagination as a content block.</p>
     </section>
   </VuePagedMedia>
 </template>
@@ -49,22 +56,40 @@ import "vue-paged-media/style.css";
 
 ## Props
 
-| 名称         | 类型                                                                                       | 说明                                                           |
-| ------------ | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------- |
-| `dimensions` | `"A4" \| "B5" \| { width: number; height: number }`                                        | 页面尺寸，单位为毫米。                                         |
-| `margin`     | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | 页边距，单位为毫米。                                           |
-| `column`     | `number`                                                                                   | 每页内容栏数，默认 `1`。                                       |
-| `columnGap`  | `number`                                                                                   | 栏间距，单位为毫米，默认 `6`。                                 |
-| `columnRule` | `boolean \| string \| CSSProperties`                                                       | 栏间竖线。传 `true` 使用默认竖线，传字符串或样式对象可自定义。 |
+| Name                 | Type                                                                                       | Description                                                                                                     |
+| -------------------- | ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| `dimensions`         | `"A4" \| "B5" \| { width: number; height: number }`                                        | Page size in millimeters.                                                                                       |
+| `margin`             | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | Page margins in millimeters.                                                                                    |
+| `column`             | `number`                                                                                   | Number of content columns on each page. Defaults to `1`.                                                        |
+| `columnGap`          | `number`                                                                                   | Gap between columns in millimeters. Defaults to `6`.                                                            |
+| `columnRule`         | `boolean \| string \| CSSProperties`                                                       | Divider between columns. Pass `true` for the default divider, or pass a string or style object to customize it. |
+| `pageMarginSlotSize` | `number`                                                                                   | Page margin slot thickness in millimeters. It does not reserve space when no page margin slots are used.        |
 
-## 分页内容
+## Pagination Content
 
-默认插槽里的顶层节点会作为内容块参与分页。Fragment 会被展开；文本形式的 HTML 会作为一个块处理；如果文本内容是 JSON 字符串数组，则会拆成多个 HTML 块。
+Top-level nodes in the default slot are treated as content blocks. Fragments are expanded; HTML text is treated as one block; if the text is a JSON string array, it is split into multiple HTML blocks.
 
-当内容块超过当前页剩余高度时，组件会尝试拆分文本和嵌套节点。单个不可拆分元素超过一页时，会作为溢出块放入单页，避免分页流程卡住。
+When a content block does not fit into the remaining page height, the component tries to split text and nested nodes. A single unsplittable element that is taller than one page is placed on one page and allowed to overflow so pagination can finish.
 
-设置 `column` 后，每页会按指定栏数分割内容区域。内容会先填充当前栏，当前栏满后进入下一栏；当前页所有栏都满后，再进入下一页第一栏。`columnGap` 会参与单栏宽度计算，`columnRule` 只控制栏间竖线样式，不影响分页测量。
+When `column` is set, each page content area is split into that many columns. Content fills the current column first, continues in the next column when it is full, and moves to the first column of the next page after all columns on the current page are full. `columnGap` participates in column width calculation, while `columnRule` only controls the divider style and does not affect pagination measurement.
 
-## 查看 Demo
+## Page Margin Slots
 
-进入 [Demo 集合](/demo/) 可以直接查看 paged media 分页预览效果和对应源码。
+The component can render repeated page headers, footers, side content, and corner marks on each page edge. These slots do not participate in content pagination measurement. The four sides and corners form one connected page-edge area, with thickness controlled by `pageMarginSlotSize`. Each page is composed from the page margin slot area and a body content container. `margin` is applied only inside that body container and represents the distance between body content and the inner edge of the page margin slots. When no page margin slots are used, `margin` represents the distance between body content and the page edge.
+
+| Slot                  | Area                      |
+| --------------------- | ------------------------- |
+| `header`              | Top page margin center    |
+| `footer`              | Bottom page margin center |
+| `left`                | Left page margin center   |
+| `right`               | Right page margin center  |
+| `top-left-corner`     | Top-left corner mark      |
+| `top-right-corner`    | Top-right corner mark     |
+| `bottom-left-corner`  | Bottom-left corner mark   |
+| `bottom-right-corner` | Bottom-right corner mark  |
+
+Each page margin slot receives `{ index, pageNumber, pageCount }`; `index` starts at `0`.
+
+## View Demos
+
+Open the [Demo Gallery](/demo/) to see paged media pagination previews and matching source code.

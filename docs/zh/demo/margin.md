@@ -1,15 +1,15 @@
 <script setup>
-import MarginAxis from "../examples/MarginAxis.vue";
-import MarginSides from "../examples/MarginSides.vue";
+import MarginAxis from "../../examples/MarginAxis.vue";
+import MarginSides from "../../examples/MarginSides.vue";
 </script>
 
 # Margin
 
-## Axis Margin
+## 轴向页边距
 
 <div class="vpm-demo">
   <div class="vpm-demo__bar">
-    <span>Axis Margin</span>
+    <span>轴向页边距</span>
     <span>:margin="{ x, y }"</span>
   </div>
   <div class="vpm-demo__stage">
@@ -17,15 +17,15 @@ import MarginSides from "../examples/MarginSides.vue";
   </div>
 </div>
 
-### Code
+### 代码
 
-<<< ../examples/MarginAxis.vue
+<<< ../../examples/MarginAxis.vue
 
-## Four-side Margin
+## 四边页边距
 
 <div class="vpm-demo">
   <div class="vpm-demo__bar">
-    <span>Four-side Margin</span>
+    <span>四边页边距</span>
     <span>:margin="{ top, right, bottom, left }"</span>
   </div>
   <div class="vpm-demo__stage">
@@ -33,6 +33,6 @@ import MarginSides from "../examples/MarginSides.vue";
   </div>
 </div>
 
-### Code
+### 代码
 
-<<< ../examples/MarginSides.vue
+<<< ../../examples/MarginSides.vue

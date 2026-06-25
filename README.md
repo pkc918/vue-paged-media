@@ -1,8 +1,13 @@
 # vue-paged-media
 
-一个 Vue 3 组件，用于在浏览器中预览 paged media 分页效果。组件根据页面尺寸和页边距测量真实 DOM 内容，再将分页结果渲染为页面预览。
+## Languages
 
-## 安装
+- [English](./README.md)
+- [简体中文](./README.zh-CN.md)
+
+A Vue 3 component for previewing paged media pagination in the browser. It measures real DOM content against page dimensions and margins, then renders the paginated result as page previews.
+
+## Installation
 
 ```sh
 # vp
@@ -15,7 +20,7 @@ pnpm add vue-paged-media
 yarn add vue-paged-media
 ```
 
-## 快速开始
+## Quick Start
 
 ```vue
 <script setup lang="ts">
@@ -24,15 +29,22 @@ import "vue-paged-media/style.css";
 </script>
 
 <template>
-  <VuePagedMedia dimensions="A4" :margin="{ x: 18, y: 24 }">
+  <VuePagedMedia dimensions="A4" :margin="{ x: 18, y: 24 }" :page-margin-slot-size="8">
+    <template #header="{ index }">Header for page {{ index + 1 }}</template>
+    <template #footer="{ pageNumber, pageCount }">{{ pageNumber }} / {{ pageCount }}</template>
+    <template #top-left-corner>TL</template>
+    <template #top-right-corner>TR</template>
+    <template #bottom-left-corner>BL</template>
+    <template #bottom-right-corner>BR</template>
+
     <article>
-      <h1>季度报告</h1>
-      <p>这里放入需要分页预览的正文内容。</p>
+      <h1>hello vue-paged-media</h1>
+      <p>Place the Vue content you want to preview as paged media here.</p>
     </article>
 
     <section>
-      <h2>明细</h2>
-      <p>每个顶层 VNode 会作为一个内容块参与分页。</p>
+      <h2>Details</h2>
+      <p>Each top-level VNode is treated as a content block.</p>
     </section>
   </VuePagedMedia>
 </template>
@@ -40,14 +52,35 @@ import "vue-paged-media/style.css";
 
 ## Props
 
-| 参数         | 类型                                                                                       | 默认值  | 说明                                |
-| ------------ | ------------------------------------------------------------------------------------------ | ------- | ----------------------------------- |
-| `dimensions` | `"A4" \| "B5" \| { width: number; height: number }`                                        | —       | 页面尺寸，单位 mm。                 |
-| `margin`     | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | —       | 页边距，单位 mm。                   |
-| `column`     | `number`                                                                                   | `1`     | 单页文字列数。                      |
-| `columnGap`  | `number`                                                                                   | `6`     | 列间距，单位 mm。                   |
-| `columnRule` | `boolean \| string \| CSSProperties`                                                       | `false` | 列间竖线样式，`true` 使用默认样式。 |
+| Prop                 | Type                                                                                       | Description                                                                                     |
+| -------------------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| `dimensions`         | `"A4" \| "B5" \| { width: number; height: number }`                                        | Page size in mm.                                                                                |
+| `margin`             | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | Page margins in mm.                                                                             |
+| `pageMarginSlotSize` | `number`                                                                                   | Page margin slot thickness in mm. It does not reserve space when no page margin slots are used. |
 
-## 文档
+## Page Margin Slots
 
-访问[文档站点](https://pkc918.github.io/vue-paged-media/)查看指南、Demo 和示例。
+The component can render repeated page headers, footers, side content, and corner marks on each page edge. These slots do not participate in content pagination measurement. The four sides and corners form one connected page-edge area, with thickness controlled by `pageMarginSlotSize`. Each page is composed from the page margin slot area and a body content container. `margin` is applied only inside that body container and represents the distance between body content and the inner edge of the page margin slots. When no page margin slots are used, `margin` represents the distance between body content and the page edge.
+
+| Slot                  | Area                      |
+| --------------------- | ------------------------- |
+| `header`              | Top page margin center    |
+| `footer`              | Bottom page margin center |
+| `left`                | Left page margin center   |
+| `right`               | Right page margin center  |
+| `top-left-corner`     | Top-left corner mark      |
+| `top-right-corner`    | Top-right corner mark     |
+| `bottom-left-corner`  | Bottom-left corner mark   |
+| `bottom-right-corner` | Bottom-right corner mark  |
+
+Each page margin slot receives `{ index, pageNumber, pageCount }`; `index` starts at `0`.
+
+## How It Works
+
+Top-level nodes in the default slot become content blocks. Fragments are expanded inline; HTML strings are treated as single blocks. When a block overflows the remaining page height, the component splits text nodes via binary search and recursively splits element trees, rebuilding ancestor wrappers around the split content.
+
+A single unsplittable element taller than one page is placed on one page and allowed to overflow so pagination can finish.
+
+## Documentation
+
+Visit [the docs site](https://pkc918.github.io/vue-paged-media/) for guides, demos, and examples.

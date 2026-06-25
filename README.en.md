@@ -1,5 +1,10 @@
 # vue-paged-media
 
+## Languages
+
+- [English](./README.md)
+- [简体中文](./README.zh-CN.md)
+
 A Vue 3 component for previewing paged media pagination in the browser. It measures real DOM content against page dimensions and margins, then renders the paginated result as page previews.
 
 ## Installation
@@ -24,10 +29,17 @@ import "vue-paged-media/style.css";
 </script>
 
 <template>
-  <VuePagedMedia dimensions="A4" :margin="{ x: 18, y: 24 }">
+  <VuePagedMedia dimensions="A4" :margin="{ x: 18, y: 24 }" :page-margin-slot-size="8">
+    <template #header="{ index }">Header for page {{ index + 1 }}</template>
+    <template #footer="{ pageNumber, pageCount }">{{ pageNumber }} / {{ pageCount }}</template>
+    <template #top-left-corner>TL</template>
+    <template #top-right-corner>TR</template>
+    <template #bottom-left-corner>BL</template>
+    <template #bottom-right-corner>BR</template>
+
     <article>
-      <h1>Quarterly Report</h1>
-      <p>Content that needs paged preview goes here.</p>
+      <h1>hello vue-paged-media</h1>
+      <p>Place the Vue content you want to preview as paged media here.</p>
     </article>
 
     <section>
@@ -40,10 +52,28 @@ import "vue-paged-media/style.css";
 
 ## Props
 
-| Prop         | Type                                                                                       | Description         |
-| ------------ | ------------------------------------------------------------------------------------------ | ------------------- |
-| `dimensions` | `"A4" \| "B5" \| { width: number; height: number }`                                        | Page size in mm.    |
-| `margin`     | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | Page margins in mm. |
+| Prop                 | Type                                                                                       | Description                                                                                     |
+| -------------------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| `dimensions`         | `"A4" \| "B5" \| { width: number; height: number }`                                        | Page size in mm.                                                                                |
+| `margin`             | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | Page margins in mm.                                                                             |
+| `pageMarginSlotSize` | `number`                                                                                   | Page margin slot thickness in mm. It does not reserve space when no page margin slots are used. |
+
+## Page Margin Slots
+
+The component can render repeated page headers, footers, side content, and corner marks on each page edge. These slots do not participate in content pagination measurement. The four sides and corners form one connected page-edge area, with thickness controlled by `pageMarginSlotSize`. Each page is composed from the page margin slot area and a body content container. `margin` is applied only inside that body container and represents the distance between body content and the inner edge of the page margin slots. When no page margin slots are used, `margin` represents the distance between body content and the page edge.
+
+| Slot                  | Area                      |
+| --------------------- | ------------------------- |
+| `header`              | Top page margin center    |
+| `footer`              | Bottom page margin center |
+| `left`                | Left page margin center   |
+| `right`               | Right page margin center  |
+| `top-left-corner`     | Top-left corner mark      |
+| `top-right-corner`    | Top-right corner mark     |
+| `bottom-left-corner`  | Bottom-left corner mark   |
+| `bottom-right-corner` | Bottom-right corner mark  |
+
+Each page margin slot receives `{ index, pageNumber, pageCount }`; `index` starts at `0`.
 
 ## How It Works
 

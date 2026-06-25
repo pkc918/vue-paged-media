@@ -1,15 +1,15 @@
 <script setup>
-import DimensionsCustom from "../examples/DimensionsCustom.vue";
-import DimensionsPreset from "../examples/DimensionsPreset.vue";
+import DimensionsCustom from "../../examples/DimensionsCustom.vue";
+import DimensionsPreset from "../../examples/DimensionsPreset.vue";
 </script>
 
 # Dimensions
 
-## Preset Size
+## 预设尺寸
 
 <div class="vpm-demo">
   <div class="vpm-demo__bar">
-    <span>Preset Size</span>
+    <span>预设尺寸</span>
     <span>dimensions="A4"</span>
   </div>
   <div class="vpm-demo__stage">
@@ -17,15 +17,15 @@ import DimensionsPreset from "../examples/DimensionsPreset.vue";
   </div>
 </div>
 
-### Code
+### 代码
 
-<<< ../examples/DimensionsPreset.vue
+<<< ../../examples/DimensionsPreset.vue
 
-## Custom Size
+## 自定义尺寸
 
 <div class="vpm-demo">
   <div class="vpm-demo__bar">
-    <span>Custom Size</span>
+    <span>自定义尺寸</span>
     <span>:dimensions="{ width, height }"</span>
   </div>
   <div class="vpm-demo__stage">
@@ -33,6 +33,6 @@ import DimensionsPreset from "../examples/DimensionsPreset.vue";
   </div>
 </div>
 
-### Code
+### 代码
 
-<<< ../examples/DimensionsCustom.vue
+<<< ../../examples/DimensionsCustom.vue
