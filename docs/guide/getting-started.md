@@ -1,6 +1,8 @@
 # 快速开始
 
-`vue-paged-media` 是一个 Vue 3 组件库，用于在打印前预览分页媒体布局。组件会根据纸张尺寸和页边距创建隐藏测量区域，再把默认插槽中的内容分页渲染为页面预览。
+`vue-paged-media` 是一个 Vue 3 组件，用来预览 paged media 的分页效果。组件会根据纸张尺寸和页边距测量默认插槽中的真实 DOM 内容，再把计算后的分页结果渲染成页面预览。
+
+<img :src="'/paged-media-scan.webp'" alt="扫描 A4 文档并切割为两页的分页预览动画" />
 
 ## 安装
 
@@ -24,7 +26,7 @@ $ yarn add vue-paged-media
 
 :::
 
-## 基础用法
+## 预览分页效果
 
 ```vue
 <script setup lang="ts">
@@ -53,7 +55,7 @@ import { VuePagedMedia } from "vue-paged-media";
 | `dimensions` | `"A4" \| "B5" \| { width: number; height: number }`                                        | 页面尺寸，单位为毫米。 |
 | `margin`     | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | 页边距，单位为毫米。   |
 
-## 内容块
+## 分页内容
 
 默认插槽里的顶层节点会作为内容块参与分页。Fragment 会被展开；文本形式的 HTML 会作为一个块处理；如果文本内容是 JSON 字符串数组，则会拆成多个 HTML 块。
 
@@ -61,4 +63,4 @@ import { VuePagedMedia } from "vue-paged-media";
 
 ## 查看 Demo
 
-进入 [Demo 集合](/demo/) 可以直接查看不同用法的渲染效果和对应源码。
+进入 [Demo 集合](/demo/) 可以直接查看 paged media 分页预览效果和对应源码。

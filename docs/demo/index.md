@@ -1,6 +1,6 @@
 # Demo 集合
 
-这里收集 `vue-paged-media` 不同 props 的使用方式。每个 Demo 页面都会同时展示实际分页效果和对应使用代码。
+这里收集 `vue-paged-media` 不同 props 下的 paged media 分页预览效果。每个 Demo 页面都会同时展示分页后的页面效果和对应使用代码。
 
 ## Demo
 

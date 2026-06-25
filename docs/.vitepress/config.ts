@@ -42,12 +42,14 @@ const enSidebar = [
   },
 ];
 
+const isDev = process.argv.includes("dev");
+
 export default defineConfig({
   title: "vue-paged-media",
   description: "A Vue library for previewing paged media layouts before printing.",
   lang: "zh-CN",
   cleanUrls: true,
-  mpa: process.argv.includes("build"),
+  mpa: !isDev,
   markdown: {
     config(md) {
       md.use(groupIconMdPlugin);

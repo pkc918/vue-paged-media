@@ -1,6 +1,8 @@
 # Getting Started
 
-`vue-paged-media` is a Vue 3 component library for previewing paged media layouts before printing. It creates hidden measuring pages from the page size and margins, then renders the default slot as paginated page previews.
+`vue-paged-media` is a Vue 3 component for previewing paged media pagination. It measures the real DOM rendered from the default slot with the given page size and margins, then renders the calculated pagination result as page previews.
+
+<img :src="'/paged-media-scan.webp'" alt="Animated preview of scanning an A4 document and splitting it into two pages" />
 
 ## Installation
 
@@ -24,7 +26,7 @@ $ yarn add vue-paged-media
 
 :::
 
-## Basic Usage
+## Preview Pagination
 
 ```vue
 <script setup lang="ts">
@@ -53,7 +55,7 @@ import { VuePagedMedia } from "vue-paged-media";
 | `dimensions` | `"A4" \| "B5" \| { width: number; height: number }`                                        | Page size in millimeters.    |
 | `margin`     | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | Page margins in millimeters. |
 
-## Content Blocks
+## Pagination Content
 
 Top-level nodes in the default slot are treated as content blocks. Fragments are expanded; HTML text is treated as one block; if the text is a JSON string array, it is split into multiple HTML blocks.
 
@@ -61,4 +63,4 @@ When a content block does not fit into the remaining page height, the component 
 
 ## View Demos
 
-Open the [Demo Gallery](/en/demo/) to see rendered effects and source code for different usage patterns.
+Open the [Demo Gallery](/en/demo/) to see paged media pagination previews and matching source code.

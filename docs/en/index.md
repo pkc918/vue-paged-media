@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: vue-paged-media
-  text: Vue paged media preview
-  tagline: Paginate Vue content by paper size in the browser and preview print-ready layouts before output.
+  text: Paged media pagination preview
+  tagline: A Vue component for previewing paged media pagination from slot content, page size, and margins.
   actions:
     - theme: brand
       text: Getting Started
@@ -14,10 +14,10 @@ hero:
       link: /en/demo/
 
 features:
-  - title: Paper Sizes
-    details: Built-in A4 and B5 presets, with custom millimeter-based page sizes.
-  - title: Page Margins
-    details: Use axis margins or explicit top, right, bottom, and left values.
-  - title: DOM Measured Pagination
-    details: Paginate from real rendered layout and split text or nested nodes when content overflows.
+  - title: Preview Pagination Early
+    details: Inspect how content is split across pages before printing or exporting.
+  - title: Render by Page Rules
+    details: Calculate each page's usable area from page size and margins for paged media workflows.
+  - title: Measure Real DOM
+    details: Paginate from rendered DOM height and split text or nested nodes when content overflows.
 ---

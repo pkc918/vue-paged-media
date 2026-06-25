@@ -1,6 +1,6 @@
 # Demo Gallery
 
-This section collects `vue-paged-media` usage patterns by props. Each demo page shows the rendered pagination result and the matching usage code.
+This section collects paged media pagination previews for different `vue-paged-media` props. Each demo page shows the paginated page result and the matching usage code.
 
 ## Demo
 
