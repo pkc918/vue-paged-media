@@ -48,6 +48,7 @@ export default defineConfig({
   title: "vue-paged-media",
   description: "A Vue library for previewing paged media layouts before printing.",
   lang: "zh-CN",
+  base: process.env.DOCS_BASE || "/",
   cleanUrls: true,
   mpa: !isDev,
   markdown: {
