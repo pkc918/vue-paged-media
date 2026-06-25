@@ -148,7 +148,7 @@ test("paginateSourceBlocks keeps blocks on the same page while they fit", () => 
   const source = createSource([element("p", [text("aa")]), element("p", [text("bbb")])]);
   const measurePage = createMeasurePage(5);
 
-  expect(paginateSourceBlocks(source, measurePage)).toEqual([["<p>aa</p>", "<p>bbb</p>"]]);
+  expect(paginateSourceBlocks(source, measurePage)).toEqual([[["<p>aa</p>", "<p>bbb</p>"]]]);
 });
 
 test("paginateSourceBlocks splits the next block when only part of it fits", () => {
@@ -156,8 +156,8 @@ test("paginateSourceBlocks splits the next block when only part of it fits", () 
   const measurePage = createMeasurePage(5);
 
   expect(paginateSourceBlocks(source, measurePage)).toEqual([
-    ["<p>aaaa</p>", "<p>b</p>"],
-    ["<p>bbb</p>"],
+    [["<p>aaaa</p>", "<p>b</p>"]],
+    [["<p>bbb</p>"]],
   ]);
 });
 
@@ -165,14 +165,17 @@ test("paginateSourceBlocks moves the next block when the current page is full", 
   const source = createSource([element("p", [text("aaaaa")]), element("p", [text("bbbb")])]);
   const measurePage = createMeasurePage(5);
 
-  expect(paginateSourceBlocks(source, measurePage)).toEqual([["<p>aaaaa</p>"], ["<p>bbbb</p>"]]);
+  expect(paginateSourceBlocks(source, measurePage)).toEqual([
+    [["<p>aaaaa</p>"]],
+    [["<p>bbbb</p>"]],
+  ]);
 });
 
 test("paginateSourceBlocks splits an oversized text block and keeps its wrapper", () => {
   const source = createSource([element("p", [text("abcdefgh")])]);
   const measurePage = createMeasurePage(5);
 
-  expect(paginateSourceBlocks(source, measurePage)).toEqual([["<p>abcde</p>"], ["<p>fgh</p>"]]);
+  expect(paginateSourceBlocks(source, measurePage)).toEqual([[["<p>abcde</p>"]], [["<p>fgh</p>"]]]);
 });
 
 test("paginateSourceBlocks splits a nested tree and carries the remaining tree to the next page", () => {
@@ -186,8 +189,8 @@ test("paginateSourceBlocks splits a nested tree and carries the remaining tree t
   const measurePage = createMeasurePage(5);
 
   expect(paginateSourceBlocks(source, measurePage)).toEqual([
-    ["<article><h1>ab</h1><p>cde</p></article>"],
-    ["<article><p>f</p><footer>gh</footer></article>"],
+    [["<article><h1>ab</h1><p>cde</p></article>"]],
+    [["<article><p>f</p><footer>gh</footer></article>"]],
   ]);
 });
 
@@ -201,8 +204,31 @@ test("paginateSourceBlocks rebuilds every ancestor around split content", () => 
   const measurePage = createMeasurePage(5);
 
   expect(paginateSourceBlocks(source, measurePage)).toEqual([
-    ["<article><section><div><p>abcde</p></div></section></article>"],
-    ["<article><section><div><p>fgh</p></div></section><footer>ij</footer></article>"],
+    [["<article><section><div><p>abcde</p></div></section></article>"]],
+    [["<article><section><div><p>fgh</p></div></section><footer>ij</footer></article>"]],
+  ]);
+});
+
+test("paginateSourceBlocks fills columns before creating the next page", () => {
+  const source = createSource([
+    element("p", [text("aaaaa")]),
+    element("p", [text("bbbbb")]),
+    element("p", [text("cc")]),
+  ]);
+  const measurePage = createMeasurePage(5);
+
+  expect(paginateSourceBlocks(source, measurePage, { columnCount: 2 })).toEqual([
+    [["<p>aaaaa</p>"], ["<p>bbbbb</p>"]],
+    [["<p>cc</p>"]],
+  ]);
+});
+
+test("paginateSourceBlocks continues split content in the next column", () => {
+  const source = createSource([element("p", [text("aaaa")]), element("p", [text("bbbb")])]);
+  const measurePage = createMeasurePage(5);
+
+  expect(paginateSourceBlocks(source, measurePage, { columnCount: 2 })).toEqual([
+    [["<p>aaaa</p>", "<p>b</p>"], ["<p>bbb</p>"]],
   ]);
 });
 

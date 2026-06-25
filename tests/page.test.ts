@@ -1,6 +1,11 @@
 import { expect, test } from "vite-plus/test";
 import { AxisPageMargin, PageMargin } from "../src/types/index.ts";
-import { getMargin, getPageSize } from "../src/utils/index.ts";
+import {
+  getMargin,
+  getPageSize,
+  normalizeColumnCount,
+  normalizeColumnGap,
+} from "../src/utils/index.ts";
 
 test("getPageSize resolves preset page sizes", () => {
   expect(getPageSize("A4")).toEqual({ width: 210, height: 297 });
@@ -43,4 +48,18 @@ test("getMargin keeps explicit page margin sides", () => {
     bottom: 2,
     left: 1,
   });
+});
+
+test("normalizeColumnCount keeps column counts as positive integers", () => {
+  expect(normalizeColumnCount(undefined)).toBe(1);
+  expect(normalizeColumnCount(0)).toBe(1);
+  expect(normalizeColumnCount(2.8)).toBe(2);
+  expect(normalizeColumnCount(Number.NaN)).toBe(1);
+});
+
+test("normalizeColumnGap keeps column gaps as non-negative millimeters", () => {
+  expect(normalizeColumnGap(undefined)).toBe(6);
+  expect(normalizeColumnGap(-2)).toBe(0);
+  expect(normalizeColumnGap(8.5)).toBe(8.5);
+  expect(normalizeColumnGap(Number.NaN)).toBe(6);
 });
