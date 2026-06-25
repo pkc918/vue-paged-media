@@ -191,6 +191,21 @@ test("paginateSourceBlocks splits a nested tree and carries the remaining tree t
   ]);
 });
 
+test("paginateSourceBlocks rebuilds every ancestor around split content", () => {
+  const source = createSource([
+    element("article", [
+      element("section", [element("div", [element("p", [text("abcdefgh")])])]),
+      element("footer", [text("ij")]),
+    ]),
+  ]);
+  const measurePage = createMeasurePage(5);
+
+  expect(paginateSourceBlocks(source, measurePage)).toEqual([
+    ["<article><section><div><p>abcde</p></div></section></article>"],
+    ["<article><section><div><p>fgh</p></div></section><footer>ij</footer></article>"],
+  ]);
+});
+
 function createSource(blocks: FakeElement[]) {
   const source = new FakeElement("div");
   for (const block of blocks) {
