@@ -4,35 +4,56 @@ import type { ContentBlock } from "../types/block.ts";
 export const contentBlockAttribute = "data-vpm-content-block";
 
 export function normalizeContentBlocks(blocks: unknown[]): ContentBlock[] {
-  return flattenContentBlocks(blocks);
+  return blocks.flatMap((block) => normalizeContentBlock(block));
 }
 
-function flattenContentBlocks(blocks: unknown[]): ContentBlock[] {
-  return blocks.flatMap((block) => {
-    if (typeof block === "string") return parseHtmlBlocks(block);
-    if (!isVNode(block)) return [];
-    if (block.type === Fragment && Array.isArray(block.children)) {
-      return flattenContentBlocks(block.children);
-    }
-    if (block.type === VueText && typeof block.children === "string") {
-      return parseHtmlBlocks(block.children);
-    }
-    return [block];
-  });
+export function getSourceBlockNodes(source: HTMLElement): Node[] {
+  return Array.from(source.querySelectorAll<HTMLElement>(`[${contentBlockAttribute}]`))
+    .map((block) => cloneContentBlockNode(block))
+    .filter((node): node is Node => node !== null);
+}
+
+function normalizeContentBlock(block: unknown): ContentBlock[] {
+  if (typeof block === "string") return parseHtmlBlocks(block);
+  if (!isVNode(block)) return [];
+  if (isFragmentWithChildren(block)) return normalizeContentBlocks(block.children);
+  if (isTextVNode(block)) return parseHtmlBlocks(block.children);
+  return [block];
 }
 
 function parseHtmlBlocks(value: string): string[] {
   const trimmed = value.trim();
   if (!trimmed) return [];
-  try {
-    const parsed = JSON.parse(trimmed) as unknown;
-    if (Array.isArray(parsed) && parsed.every((item) => typeof item === "string")) {
-      return parsed;
-    }
-  } catch {
-    // Plain text from the default slot is also treated as one HTML block.
-  }
+  if (isJsonStringArray(trimmed)) return JSON.parse(trimmed) as string[];
   return [value];
+}
+
+function isJsonStringArray(value: string): boolean {
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    return Array.isArray(parsed) && parsed.every((item) => typeof item === "string");
+  } catch {
+    return false;
+  }
+}
+
+function cloneContentBlockNode(block: HTMLElement): Node | null {
+  const meaningfulChildren = Array.from(block.childNodes).filter(isMeaningfulChildNode);
+  if (meaningfulChildren.length === 0) return null;
+  if (meaningfulChildren.length === 1) return meaningfulChildren[0].cloneNode(true);
+  return block.cloneNode(true);
+}
+
+function isMeaningfulChildNode(node: Node): boolean {
+  return node.nodeType !== Node.TEXT_NODE || (node.textContent?.trim() ?? "") !== "";
+}
+
+function isFragmentWithChildren(block: VNode): block is VNode & { children: unknown[] } {
+  return block.type === Fragment && Array.isArray(block.children);
+}
+
+function isTextVNode(block: VNode): block is VNode & { children: string } {
+  return block.type === VueText && typeof block.children === "string";
 }
 
 function isVNode(value: unknown): value is VNode {

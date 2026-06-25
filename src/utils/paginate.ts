@@ -1,198 +1,96 @@
-import type { NodeSplitResult, PaginationResult } from "../types/index.ts";
-import { contentBlockAttribute } from "./content.ts";
+import type { PaginationResult } from "../types/index.ts";
+import { getSourceBlockNodes } from "./content.ts";
+import { appendNode, appendNodeIfPageHasRoom, splitNodeToFit } from "./split.ts";
 
 export function paginateSourceBlocks(
   source: HTMLElement,
   measurePage: HTMLElement,
 ): PaginationResult {
-  const nextPages: PaginationResult = [];
-  const blocks = getSourceBlocks(source);
-  resetMeasurePage(measurePage);
+  const pages: PaginationResult = [];
+  const blocks = getSourceBlockNodes(source);
+  clearMeasurePage(measurePage);
 
   let currentPage: string[] = [];
 
-  function commitPage() {
-    nextPages.push(currentPage);
-    currentPage = [];
-    resetMeasurePage(measurePage);
-  }
-
   for (const block of blocks) {
-    let rest: Node | null = block;
-
-    while (rest) {
-      const whole = rest.cloneNode(true);
-      if (appendIfFits(measurePage, whole)) {
-        currentPage.push(nodeToHtml(whole));
-        rest = null;
-        continue;
-      }
-
-      const split = splitNodeToFit(rest, measurePage);
-      if (split.fit) {
-        currentPage.push(nodeToHtml(split.fit));
-      }
-
-      if (currentPage.length > 0) {
-        commitPage();
-        rest = split.rest;
-        continue;
-      }
-
-      const overflow = split.rest?.cloneNode(true) ?? rest.cloneNode(true);
-      appendWithoutFitCheck(measurePage, overflow);
-      currentPage.push(nodeToHtml(overflow));
-      commitPage();
-      rest = null;
-    }
+    currentPage = appendBlockAcrossPages(block, currentPage, pages, measurePage);
   }
 
-  if (currentPage.length > 0 || nextPages.length === 0) {
-    nextPages.push(currentPage);
+  if (currentPage.length > 0 || pages.length === 0) {
+    pages.push(currentPage);
   }
 
-  return nextPages;
+  return pages;
 }
 
-function getSourceBlocks(source: HTMLElement): Node[] {
-  return Array.from(source.querySelectorAll<HTMLElement>(`[${contentBlockAttribute}]`))
-    .map((block) => getBlockNode(block))
-    .filter((node): node is Node => node !== null);
+function appendBlockAcrossPages(
+  block: Node,
+  currentPage: string[],
+  pages: PaginationResult,
+  measurePage: HTMLElement,
+): string[] {
+  let rest: Node | null = block;
+  let page = currentPage;
+
+  while (rest) {
+    const result = appendNodeAcrossPages(rest, page, pages, measurePage);
+    rest = result.rest;
+    page = result.currentPage;
+  }
+
+  return page;
 }
 
-function getBlockNode(block: HTMLElement): Node | null {
-  const meaningfulChildren = Array.from(block.childNodes).filter((node) => {
-    return node.nodeType !== Node.TEXT_NODE || (node.textContent?.trim() ?? "") !== "";
-  });
-  if (meaningfulChildren.length === 1) return meaningfulChildren[0].cloneNode(true);
-  if (meaningfulChildren.length === 0) return null;
-  return block.cloneNode(true);
+function appendNodeAcrossPages(
+  node: Node,
+  currentPage: string[],
+  pages: PaginationResult,
+  measurePage: HTMLElement,
+): { currentPage: string[]; rest: Node | null } {
+  const whole = node.cloneNode(true);
+  if (appendNodeIfPageHasRoom(measurePage, whole, measurePage)) {
+    currentPage.push(serializeNodeToHtml(whole));
+    return { currentPage, rest: null };
+  }
+
+  const split = splitNodeToFit(node, measurePage);
+  if (split.fit) currentPage.push(serializeNodeToHtml(split.fit));
+
+  if (currentPage.length > 0) {
+    return { currentPage: commitPage(currentPage, pages, measurePage), rest: split.rest };
+  }
+
+  appendOverflowingNodeToEmptyPage(split.rest ?? node, currentPage, pages, measurePage);
+  return { currentPage: [], rest: null };
 }
 
-function resetMeasurePage(measurePage: HTMLElement) {
+function commitPage(
+  currentPage: string[],
+  pages: PaginationResult,
+  measurePage: HTMLElement,
+): string[] {
+  pages.push(currentPage);
+  clearMeasurePage(measurePage);
+  return [];
+}
+
+function appendOverflowingNodeToEmptyPage(
+  node: Node,
+  currentPage: string[],
+  pages: PaginationResult,
+  measurePage: HTMLElement,
+): void {
+  const overflow = node.cloneNode(true);
+  appendNode(measurePage, overflow);
+  currentPage.push(serializeNodeToHtml(overflow));
+  commitPage(currentPage, pages, measurePage);
+}
+
+function clearMeasurePage(measurePage: HTMLElement): void {
   measurePage.replaceChildren();
 }
 
-function appendWithoutFitCheck(parent: Node, node: Node) {
-  parent.appendChild(node);
-}
-
-function appendIfFits(measurePage: HTMLElement, node: Node) {
-  measurePage.appendChild(node);
-  if (pageHasRoom(measurePage)) return true;
-  removeNode(node);
-  return false;
-}
-
-function pageHasRoom(measurePage: HTMLElement) {
-  return measurePage.scrollHeight <= measurePage.clientHeight + 0.5;
-}
-
-function splitNodeToFit(node: Node, measurePage: HTMLElement): NodeSplitResult {
-  return splitNodeIntoParent(node, measurePage, measurePage);
-}
-
-function splitNodeIntoParent(node: Node, parent: Node, measurePage: HTMLElement): NodeSplitResult {
-  if (node.nodeType === Node.TEXT_NODE) {
-    return splitTextIntoParent(node, parent, measurePage);
-  }
-
-  if (node.nodeType !== Node.ELEMENT_NODE) {
-    const clone = node.cloneNode(true);
-    return appendIfFits(measurePage, clone)
-      ? { fit: clone, rest: null }
-      : { fit: null, rest: node.cloneNode(true) };
-  }
-
-  const element = node as Element;
-  const fitElement = element.cloneNode(false);
-  parent.appendChild(fitElement);
-  if (!pageHasRoom(measurePage)) {
-    removeNode(fitElement);
-    return { fit: null, rest: element.cloneNode(true) };
-  }
-
-  const restElement = element.cloneNode(false);
-  const children = Array.from(element.childNodes);
-  let hasFitContent = false;
-
-  for (let index = 0; index < children.length; index += 1) {
-    const child = children[index];
-    const childClone = child.cloneNode(true);
-    fitElement.appendChild(childClone);
-
-    if (pageHasRoom(measurePage)) {
-      hasFitContent = true;
-      continue;
-    }
-
-    removeNode(childClone);
-    const childSplit = splitNodeIntoParent(child, fitElement, measurePage);
-    if (childSplit.fit) hasFitContent = true;
-    if (childSplit.rest) restElement.appendChild(childSplit.rest);
-
-    for (const remainingChild of children.slice(index + 1)) {
-      restElement.appendChild(remainingChild.cloneNode(true));
-    }
-    break;
-  }
-
-  if (!hasFitContent) {
-    removeNode(fitElement);
-  }
-
-  return {
-    fit: hasFitContent ? fitElement : null,
-    rest: restElement.childNodes.length > 0 ? restElement : null,
-  };
-}
-
-function splitTextIntoParent(node: Node, parent: Node, measurePage: HTMLElement): NodeSplitResult {
-  const text = node.textContent ?? "";
-  let low = 0;
-  let high = text.length;
-  let best = 0;
-
-  while (low <= high) {
-    const middle = Math.floor((low + high) / 2);
-    const candidate = document.createTextNode(text.slice(0, middle));
-    parent.appendChild(candidate);
-
-    if (pageHasRoom(measurePage)) {
-      best = middle;
-      low = middle + 1;
-    } else {
-      high = middle - 1;
-    }
-    removeNode(candidate);
-  }
-
-  const bestNode = best > 0 ? document.createTextNode(text.slice(0, best)) : null;
-  if (bestNode && best < text.length) {
-    bestNode.textContent = trimTrailingBreak(text.slice(0, best));
-  }
-  if (bestNode) parent.appendChild(bestNode);
-
-  const restText = trimLeadingBreak(text.slice(best));
-  return {
-    fit: bestNode,
-    rest: restText ? document.createTextNode(restText) : null,
-  };
-}
-
-function trimTrailingBreak(value: string) {
-  return value.replace(/\s+$/, "");
-}
-
-function trimLeadingBreak(value: string) {
-  return value.replace(/^\s+/, "");
-}
-
-function removeNode(node: Node) {
-  node.parentNode?.removeChild(node);
-}
-
-function nodeToHtml(node: Node) {
+function serializeNodeToHtml(node: Node): string {
   const container = document.createElement("div");
   container.appendChild(node.cloneNode(true));
   return container.innerHTML;

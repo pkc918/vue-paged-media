@@ -5,22 +5,29 @@ import {
   type PresetPageSize,
 } from "../types/index.ts";
 
-const pageSize: Record<PresetPageSize, PageSize> = {
+const presetPageSizes: Record<PresetPageSize, PageSize> = {
   A4: { width: 210, height: 297 },
   B5: { width: 176, height: 250 },
 };
 
 export function getPageSize(presetPage: PresetPageSize | PageSize): PageSize {
-  if (typeof presetPage === "string") {
-    return pageSize[presetPage];
-  }
+  if (typeof presetPage === "string") return presetPageSizes[presetPage];
   return presetPage;
 }
 
 export function getMargin(margin: PageMargin | AxisPageMargin): PageMargin {
-  if ("x" in margin && "y" in margin) {
-    const { x, y } = margin;
-    return new PageMargin(y, x, y, x);
-  }
+  if (isAxisPageMargin(margin)) return createMarginFromAxis(margin);
+  return createMarginFromSides(margin);
+}
+
+function isAxisPageMargin(margin: PageMargin | AxisPageMargin): margin is AxisPageMargin {
+  return "x" in margin && "y" in margin;
+}
+
+function createMarginFromAxis(margin: AxisPageMargin): PageMargin {
+  return new PageMargin(margin.y, margin.x, margin.y, margin.x);
+}
+
+function createMarginFromSides(margin: PageMargin): PageMargin {
   return new PageMargin(margin.top, margin.right, margin.bottom, margin.left);
 }
