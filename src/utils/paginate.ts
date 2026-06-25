@@ -4,8 +4,8 @@ import type {
   PaginationOptions,
   PaginationResult,
 } from "../types/index.ts";
+import { normalizeColumnCount } from "./column.ts";
 import { getSourceBlockNodes } from "./content.ts";
-import { normalizeColumnCount } from "./page.ts";
 import { appendNode, appendNodeIfPageHasRoom, splitNodeToFit } from "./split.ts";
 
 export function paginateSourceBlocks(

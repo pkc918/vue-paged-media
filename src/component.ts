@@ -13,6 +13,7 @@ import {
   type PropType,
 } from "vue";
 import type {
+  ColumnRule,
   PageDimensions,
   PageMarginInput,
   PageMarginSlotProps,
@@ -22,13 +23,15 @@ import {
   getMargin,
   getPageSize,
   contentBlockAttribute,
+  getColumnRuleOffset,
+  getColumnRuleStyle,
+  getColumnWidth,
   normalizeColumnCount,
   normalizeColumnGap,
   normalizeContentBlocks,
   paginateSourceBlocks,
 } from "./utils/index.ts";
 
-type ColumnRule = boolean | string | CSSProperties;
 
 const pageMarginSlotNames = [
   "header",
@@ -168,24 +171,9 @@ export const VuePagedMedia = defineComponent({
       boxSizing: "border-box",
     }));
 
-    const columnRuleStyle = computed<CSSProperties | null>(() => {
-      if (columnCount.value < 2 || props.columnRule === false) return null;
-
-      const defaultStyle: CSSProperties = {
-        position: "absolute",
-        top: "0",
-        bottom: "0",
-        width: "0",
-        borderLeft: "0.2mm solid #d1d5db",
-        pointerEvents: "none",
-      };
-
-      if (props.columnRule === true) return defaultStyle;
-      if (typeof props.columnRule === "string") {
-        return { ...defaultStyle, borderLeft: props.columnRule };
-      }
-      return { ...defaultStyle, ...props.columnRule };
-    });
+    const columnRuleStyle = computed<CSSProperties | null>(() =>
+      getColumnRuleStyle(columnCount.value, props.columnRule),
+    );
 
     function schedulePagination() {
       if (scheduled) return;
@@ -459,12 +447,3 @@ export const VuePagedMedia = defineComponent({
     }
   },
 });
-
-function getColumnWidth(contentWidth: number, columnCount: number, columnGap: number): number {
-  const totalGap = columnGap * (columnCount - 1);
-  return Math.max(0, (contentWidth - totalGap) / columnCount);
-}
-
-function getColumnRuleOffset(columnIndex: number, columnWidth: number, columnGap: number): number {
-  return columnWidth * (columnIndex + 1) + columnGap * (columnIndex + 0.5);
-}
