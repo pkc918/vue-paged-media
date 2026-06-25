@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { VuePagedMedia } from "vue-paged-media";
+import data from "../public/data.json";
 </script>
 
 <template>
-  <VuePagedMedia :dimensions="{ width: 148, height: 210 }" :margin="{ x: 14, y: 18 }">
-    <section>
-      <h1>Custom dimensions</h1>
-      <p>Use millimeter values when you need a custom page size.</p>
-    </section>
+  <VuePagedMedia :dimensions="{ width: 148, height: 210 }" :margin="{ x: 4, y: 4 }">
+    <section v-for="(html, index) in data" :key="index" v-html="html" />
   </VuePagedMedia>
 </template>
