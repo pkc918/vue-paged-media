@@ -67,6 +67,14 @@ export const VuePagedMedia = defineComponent({
       wordBreak: "break-word",
     }));
 
+    const fallbackContentStyle = computed<CSSProperties>(() => ({
+      width: `${contentSize.value.width}mm`,
+      minHeight: `${contentSize.value.height}mm`,
+      boxSizing: "border-box",
+      overflowWrap: "anywhere",
+      wordBreak: "break-word",
+    }));
+
     const sourceBlockStyle = computed<CSSProperties>(() => ({
       width: `${contentSize.value.width}mm`,
       boxSizing: "border-box",
@@ -196,7 +204,7 @@ export const VuePagedMedia = defineComponent({
                       "div",
                       {
                         class: "vue-paged-media__page-content",
-                        style: contentStyle.value,
+                        style: fallbackContentStyle.value,
                       },
                       typeof block === "string"
                         ? h("div", { innerHTML: block })
