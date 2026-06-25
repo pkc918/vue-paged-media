@@ -16,9 +16,8 @@ const zhSidebar = [
     text: "Demo",
     items: [
       { text: "Demo 集合", link: "/demo/" },
-      { text: "基础分页", link: "/demo/basic" },
-      { text: "自定义纸张", link: "/demo/custom-size" },
-      { text: "长内容跨页", link: "/demo/long-content" },
+      { text: "Dimensions", link: "/demo/dimensions" },
+      { text: "Margin", link: "/demo/margin" },
     ],
   },
 ];
@@ -37,9 +36,8 @@ const enSidebar = [
     text: "Demo",
     items: [
       { text: "Demo Gallery", link: "/en/demo/" },
-      { text: "Basic Pagination", link: "/en/demo/basic" },
-      { text: "Custom Page Size", link: "/en/demo/custom-size" },
-      { text: "Long Content", link: "/en/demo/long-content" },
+      { text: "Dimensions", link: "/en/demo/dimensions" },
+      { text: "Margin", link: "/en/demo/margin" },
     ],
   },
 ];

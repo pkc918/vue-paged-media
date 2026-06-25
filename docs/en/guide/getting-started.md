@@ -59,22 +59,6 @@ Top-level nodes in the default slot are treated as content blocks. Fragments are
 
 When a content block does not fit into the remaining page height, the component tries to split text and nested nodes. A single unsplittable element that is taller than one page is placed on one page and allowed to overflow so pagination can finish.
 
-## Styling
-
-The component renders classes such as `.vue-paged-media__pages`, `.vue-paged-media__page`, and `.vue-paged-media__page-content`. Add preview styling in your application:
-
-```css
-.vue-paged-media__pages {
-  display: grid;
-  gap: 24px;
-  justify-content: center;
-}
-
-.vue-paged-media__page {
-  box-shadow: 0 12px 32px rgb(15 23 42 / 0.16);
-}
-```
-
 ## View Demos
 
 Open the [Demo Gallery](/en/demo/) to see rendered effects and source code for different usage patterns.

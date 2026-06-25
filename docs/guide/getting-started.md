@@ -59,22 +59,6 @@ import { VuePagedMedia } from "vue-paged-media";
 
 当内容块超过当前页剩余高度时，组件会尝试拆分文本和嵌套节点。单个不可拆分元素超过一页时，会作为溢出块放入单页，避免分页流程卡住。
 
-## 样式建议
-
-组件会输出 `.vue-paged-media__pages`、`.vue-paged-media__page` 和 `.vue-paged-media__page-content` 等类名。你可以在业务项目中添加预览样式，例如页面阴影和间距：
-
-```css
-.vue-paged-media__pages {
-  display: grid;
-  gap: 24px;
-  justify-content: center;
-}
-
-.vue-paged-media__page {
-  box-shadow: 0 12px 32px rgb(15 23 42 / 0.16);
-}
-```
-
 ## 查看 Demo
 
 进入 [Demo 集合](/demo/) 可以直接查看不同用法的渲染效果和对应源码。
