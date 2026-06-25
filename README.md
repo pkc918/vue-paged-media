@@ -40,16 +40,13 @@ import "vue-paged-media/style.css";
 
 ## Props
 
-| 参数         | 类型                                                                                       | 说明                |
-| ------------ | ------------------------------------------------------------------------------------------ | ------------------- |
-| `dimensions` | `"A4" \| "B5" \| { width: number; height: number }`                                        | 页面尺寸，单位 mm。 |
-| `margin`     | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | 页边距，单位 mm。   |
-
-## 工作原理
-
-默认插槽中的顶层节点会作为内容块参与分页。Fragment 会被展开；HTML 字符串作为单个块处理。当内容块超过当前页剩余高度时，组件通过二分查找拆分文本节点，并递归拆分元素树，在拆分内容周围重建祖先包装元素。
-
-单个不可拆分元素超过一页时，会被放入单页并允许溢出，避免分页流程卡住。
+| 参数         | 类型                                                                                       | 默认值  | 说明                                |
+| ------------ | ------------------------------------------------------------------------------------------ | ------- | ----------------------------------- |
+| `dimensions` | `"A4" \| "B5" \| { width: number; height: number }`                                        | —       | 页面尺寸，单位 mm。                 |
+| `margin`     | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | —       | 页边距，单位 mm。                   |
+| `column`     | `number`                                                                                   | `1`     | 单页文字列数。                      |
+| `columnGap`  | `number`                                                                                   | `6`     | 列间距，单位 mm。                   |
+| `columnRule` | `boolean \| string \| CSSProperties`                                                       | `false` | 列间竖线样式，`true` 使用默认样式。 |
 
 ## 文档
 
