@@ -2,8 +2,6 @@
 
 `vue-paged-media` 是一个 Vue 3 组件，用来预览 paged media 的分页效果。组件会根据纸张尺寸和页边距测量默认插槽中的真实 DOM 内容，再把计算后的分页结果渲染成页面预览。
 
-<img :src="'/paged-media-scan.webp'" alt="扫描 A4 文档并切割为两页的分页预览动画" />
-
 ## 安装
 
 ::: code-group

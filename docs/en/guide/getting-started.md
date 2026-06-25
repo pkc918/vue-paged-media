@@ -2,8 +2,6 @@
 
 `vue-paged-media` is a Vue 3 component for previewing paged media pagination. It measures the real DOM rendered from the default slot with the given page size and margins, then renders the calculated pagination result as page previews.
 
-<img :src="'/paged-media-scan.webp'" alt="Animated preview of scanning an A4 document and splitting it into two pages" />
-
 ## Installation
 
 ::: code-group

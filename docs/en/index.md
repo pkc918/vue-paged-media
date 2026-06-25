@@ -5,6 +5,9 @@ hero:
   name: vue-paged-media
   text: Paged media pagination preview
   tagline: A Vue component for previewing paged media pagination from slot content, page size, and margins.
+  image:
+    src: /paged-media-scan.webp
+    alt: Animated preview of scanning an A4 document and splitting it into two pages
   actions:
     - theme: brand
       text: Getting Started

@@ -5,6 +5,9 @@ hero:
   name: vue-paged-media
   text: 提前预览Paged media分页效果
   tagline: 一个能提前预览 paged media 分页打印效果的 Vue 组件。
+  image:
+    src: /paged-media-scan.webp
+    alt: 扫描 A4 文档并切割为两页的分页预览动画
   actions:
     - theme: brand
       text: 快速开始
