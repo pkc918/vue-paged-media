@@ -11,11 +11,19 @@ env:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          persist-credentials: false
 
       - name: Set node version to LTS
         uses: actions/setup-node@v4
@@ -30,8 +38,14 @@ jobs:
         env:
           DOCS_BASE: /vue-paged-media/
 
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
         with:
-          branch: gh-pages
-          folder: docs/.vitepress/dist
+          path: docs/.vitepress/dist
+
+      - name: Deploy
+        id: deploy
+        uses: actions/deploy-pages@v4
