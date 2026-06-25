@@ -1,6 +1,11 @@
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitepress";
 import { groupIconMdPlugin, groupIconVitePlugin } from "vitepress-plugin-group-icons";
+
+const { version } = JSON.parse(
+  readFileSync(new URL("../../package.json", import.meta.url), "utf-8"),
+);
 
 const zhNav = [
   { text: "指南", link: "/guide/getting-started" },
@@ -72,7 +77,10 @@ export default defineConfig({
   },
   themeConfig: {
     logo: "/logo.svg",
-    nav: zhNav,
+    nav: [
+      ...zhNav,
+      { text: `v${version}`, link: "https://github.com/pkc918/vue-paged-media/releases" },
+    ],
     sidebar: zhSidebar,
     langMenuLabel: "切换语言",
     socialLinks: [{ icon: "github", link: "https://github.com/pkc918/vue-paged-media" }],
@@ -88,7 +96,10 @@ export default defineConfig({
       title: "vue-paged-media",
       description: "用于打印前预览分页媒体布局的 Vue 组件库。",
       themeConfig: {
-        nav: zhNav,
+        nav: [
+          ...zhNav,
+          { text: `v${version}`, link: "https://github.com/pkc918/vue-paged-media/releases" },
+        ],
         sidebar: zhSidebar,
         langMenuLabel: "切换语言",
       },
@@ -100,7 +111,10 @@ export default defineConfig({
       title: "vue-paged-media",
       description: "A Vue library for previewing paged media layouts before printing.",
       themeConfig: {
-        nav: enNav,
+        nav: [
+          ...enNav,
+          { text: `v${version}`, link: "https://github.com/pkc918/vue-paged-media/releases" },
+        ],
         sidebar: enSidebar,
         langMenuLabel: "Change language",
       },
