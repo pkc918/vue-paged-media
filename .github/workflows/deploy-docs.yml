@@ -5,37 +5,33 @@ on:
     tags:
       - "*"
 
+env:
+  NODE_VERSION: lts/*
+
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
-
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          node-version: 22
+          persist-credentials: false
 
-      - run: npm install
+      - name: Set node version to LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: https://registry.npmjs.org/
 
-      - run: npx vitepress build docs --base /vue-paged-media/
+      - name: Install and Build
+        run: |
+          npm install
+          npm run docs:build
         env:
           DOCS_BASE: /vue-paged-media/
 
-      - uses: actions/configure-pages@v5
-
-      - uses: actions/upload-pages-artifact@v4
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          path: docs/.vitepress/dist
-
-      - id: deploy
-        uses: actions/deploy-pages@v4
+          branch: gh-pages
+          folder: docs/.vitepress/dist
