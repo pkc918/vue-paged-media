@@ -173,15 +173,38 @@ export const VuePagedMedia = defineComponent({
         h(
           "div",
           { class: "vue-paged-media__pages" },
-          pages.value.map((page, index) =>
-            h("section", { key: index, class: "vue-paged-media__page", style: pageStyle.value }, [
-              h("div", {
-                class: "vue-paged-media__page-content",
-                style: contentStyle.value,
-                innerHTML: page.join(""),
-              }),
-            ]),
-          ),
+          pages.value.length > 0
+            ? pages.value.map((page, index) =>
+                h(
+                  "section",
+                  { key: index, class: "vue-paged-media__page", style: pageStyle.value },
+                  [
+                    h("div", {
+                      class: "vue-paged-media__page-content",
+                      style: contentStyle.value,
+                      innerHTML: page.join(""),
+                    }),
+                  ],
+                ),
+              )
+            : blocks.map((block, index) =>
+                h(
+                  "section",
+                  { key: index, class: "vue-paged-media__page", style: pageStyle.value },
+                  [
+                    h(
+                      "div",
+                      {
+                        class: "vue-paged-media__page-content",
+                        style: contentStyle.value,
+                      },
+                      typeof block === "string"
+                        ? h("div", { innerHTML: block })
+                        : cloneVNode(block),
+                    ),
+                  ],
+                ),
+              ),
         ),
       ]);
     };
