@@ -18,6 +18,7 @@ const zhSidebar = [
       { text: "Demo 集合", link: "/demo/" },
       { text: "Dimensions", link: "/demo/dimensions" },
       { text: "Margin", link: "/demo/margin" },
+      { text: "Column", link: "/demo/column" },
     ],
   },
 ];
@@ -38,6 +39,7 @@ const enSidebar = [
       { text: "Demo Gallery", link: "/en/demo/" },
       { text: "Dimensions", link: "/en/demo/dimensions" },
       { text: "Margin", link: "/en/demo/margin" },
+      { text: "Column", link: "/en/demo/column" },
     ],
   },
 ];

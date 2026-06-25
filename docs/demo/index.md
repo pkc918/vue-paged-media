@@ -6,3 +6,4 @@
 
 - [Dimensions](/demo/dimensions)：展示预设尺寸和自定义尺寸两种写法。
 - [Margin](/demo/margin)：展示轴向页边距和四边页边距两种写法。
+- [Column](/demo/column)：展示每页多栏分页的写法。
