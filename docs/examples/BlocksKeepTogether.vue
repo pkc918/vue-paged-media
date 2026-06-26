@@ -23,7 +23,7 @@ const tallImage =
     :margin="{ x: 4, y: 4 }"
     :column="columns"
     :column-gap="8"
-    :column-rule="columns > 1 ? '0.2mm solid #cbd5e1' : false"
+    :column-rule="(columns as number) > 1 ? '0.2mm solid #cbd5e1' : false"
     :blocks="['.keep-together', '.split-when-too-tall']"
   >
     <section
