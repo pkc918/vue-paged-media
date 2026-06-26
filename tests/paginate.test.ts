@@ -326,6 +326,21 @@ test("paginateSourceBlocks starts nested oversized configured blocks on the next
   ]);
 });
 
+test("paginateSourceBlocks starts oversized configured blocks in the next column before splitting", () => {
+  const source = createSource([
+    element("p", [text("aaaa")]),
+    element("div", [text("bcdefghi")], { class: "keep-together" }),
+  ]);
+  const measurePage = createMeasurePage(5);
+
+  expect(
+    paginateSourceBlocks(source, measurePage, { blocks: [".keep-together"], columnCount: 2 }),
+  ).toEqual([
+    [["<p>aaaa</p>"], ['<div class="keep-together">bcdef</div>']],
+    [['<div class="keep-together">ghi</div>']],
+  ]);
+});
+
 test("paginateSourceBlocks shrinks images that are taller than an empty page", () => {
   const source = createSource([element("img", [], { "data-height": "8" })]);
   const measurePage = createMeasurePage(5);
@@ -415,6 +430,23 @@ test("paginateSourceBlocks starts empty image wrappers on the next page before s
   expect(paginateSourceBlocks(source, measurePage)).toEqual([
     [["<p>aaaa</p>"]],
     [
+      [
+        '<section><img data-height="8" style="max-height: 5px; height: auto; width: auto; max-width: 100%; object-fit: contain;"></img></section>',
+      ],
+    ],
+  ]);
+});
+
+test("paginateSourceBlocks starts oversized images in the next column before shrinking", () => {
+  const source = createSource([
+    element("p", [text("aaaa")]),
+    element("section", [element("img", [], { "data-height": "8" })]),
+  ]);
+  const measurePage = createMeasurePage(5);
+
+  expect(paginateSourceBlocks(source, measurePage, { columnCount: 2 })).toEqual([
+    [
+      ["<p>aaaa</p>"],
       [
         '<section><img data-height="8" style="max-height: 5px; height: auto; width: auto; max-width: 100%; object-fit: contain;"></img></section>',
       ],
