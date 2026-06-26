@@ -16,6 +16,7 @@ export function paginateSourceBlocks(
   const pages: PaginationResult = [];
   const blocks = getSourceBlockNodes(source);
   const columnCount = normalizeColumnCount(options.columnCount);
+  const blockSelectors = options.blocks ?? [];
   clearMeasurePage(measurePage);
 
   let currentColumn: PaginatedColumn = [];
@@ -29,6 +30,7 @@ export function paginateSourceBlocks(
       pages,
       measurePage,
       columnCount,
+      blockSelectors,
     );
     currentColumn = result.currentColumn;
     currentPage = result.currentPage;
@@ -54,13 +56,22 @@ function appendBlockAcrossColumns(
   pages: PaginationResult,
   measurePage: HTMLElement,
   columnCount: number,
+  blockSelectors: string[],
 ): { currentColumn: PaginatedColumn; currentPage: PaginatedPage } {
   let rest: Node | null = block;
   let column = currentColumn;
   let page = currentPage;
 
   while (rest) {
-    const result = appendNodeAcrossColumns(rest, column, page, pages, measurePage, columnCount);
+    const result = appendNodeAcrossColumns(
+      rest,
+      column,
+      page,
+      pages,
+      measurePage,
+      columnCount,
+      blockSelectors,
+    );
     rest = result.rest;
     column = result.currentColumn;
     page = result.currentPage;
@@ -76,6 +87,7 @@ function appendNodeAcrossColumns(
   pages: PaginationResult,
   measurePage: HTMLElement,
   columnCount: number,
+  blockSelectors: string[],
 ): { currentColumn: PaginatedColumn; currentPage: PaginatedPage; rest: Node | null } {
   const whole = node.cloneNode(true);
   if (appendNodeIfPageHasRoom(measurePage, whole, measurePage)) {
@@ -83,7 +95,7 @@ function appendNodeAcrossColumns(
     return { currentColumn, currentPage, rest: null };
   }
 
-  const split = splitNodeToFit(node, measurePage);
+  const split = splitNodeToFit(node, measurePage, { blockSelectors });
   if (split.fit) currentColumn.push(serializeNodeToHtml(split.fit));
 
   if (currentColumn.length > 0) {

@@ -32,7 +32,6 @@ import {
   paginateSourceBlocks,
 } from "./utils/index.ts";
 
-
 const pageMarginSlotNames = [
   "header",
   "footer",
@@ -66,6 +65,10 @@ export const VuePagedMedia = defineComponent({
     columnRule: {
       type: [Boolean, String, Object] as PropType<ColumnRule>,
       default: false,
+    },
+    blocks: {
+      type: Array as PropType<string[]>,
+      default: () => [],
     },
     corner: {
       type: Number,
@@ -191,6 +194,7 @@ export const VuePagedMedia = defineComponent({
 
       const nextPages = paginateSourceBlocks(source, measurePage, {
         columnCount: columnCount.value,
+        blocks: props.blocks,
       });
       if (JSON.stringify(pages.value) !== JSON.stringify(nextPages)) {
         pages.value = nextPages;
@@ -232,7 +236,15 @@ export const VuePagedMedia = defineComponent({
       resizeObserver?.disconnect();
     });
     watch(
-      () => [props.dimensions, props.margin, props.column, props.columnGap, props.corner],
+      () => [
+        props.dimensions,
+        props.margin,
+        props.column,
+        props.columnGap,
+        props.columnRule,
+        props.blocks,
+        props.corner,
+      ],
       schedulePagination,
       {
         deep: true,
