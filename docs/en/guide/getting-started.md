@@ -78,12 +78,12 @@ Use `blocks` when some elements should stay together during pagination:
 <VuePagedMedia dimensions="A4" :margin="{ x: 18, y: 24 }" :blocks="['.keep-together']">
   <section class="keep-together">
     <h2>Summary</h2>
-    <p>This section moves to the next page as a whole when it can fit there.</p>
+    <p>This section moves to the next column or page as a whole when it can fit there.</p>
   </section>
 </VuePagedMedia>
 ```
 
-Elements matching `blocks` are not split if they can fit on an empty page. If a matched element is taller than the available content height of one page, it falls back to normal splitting so pagination can continue. Images have a separate rule: when an image exceeds the page height or width, it is scaled down to fit the available page area while preserving its aspect ratio.
+Elements matching `blocks` are not split if they can fit in an empty column. If a matched element is taller than the available content height of one column, it starts in the next column or page first, then falls back to normal splitting so pagination can continue. Images have a separate rule: when an image exceeds the column height or width, it starts in the next column or page first, then scales down to fit the available area while preserving its aspect ratio.
 
 When `column` is set, each page content area is split into that many columns. Content fills the current column first, continues in the next column when it is full, and moves to the first column of the next page after all columns on the current page are full. `columnGap` participates in column width calculation, while `columnRule` only controls the divider style and does not affect pagination measurement.
 

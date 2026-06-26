@@ -83,7 +83,7 @@ Each page margin slot receives `{ index, pageNumber, pageCount }`; `index` start
 
 Top-level nodes in the default slot become content blocks. Fragments are expanded inline; HTML strings are treated as single blocks. When a block overflows the remaining page height, the component splits text nodes via binary search and recursively splits element trees, rebuilding ancestor wrappers around the split content.
 
-Elements matching `blocks` selectors are treated as keep-together blocks: if the element can fit on an empty page, it moves as a whole to the next page instead of splitting. If it is taller than an empty page, it is split normally so content can continue across pages.
+Elements matching `blocks` selectors are treated as keep-together blocks: if the element can fit in an empty column, it moves as a whole to the next column or page instead of splitting. If it is taller than an empty column, it starts in the next column or page first, then splits normally so content can continue.
 
 Images that exceed the page height or width are scaled down to fit the available page area while preserving their aspect ratio.
 

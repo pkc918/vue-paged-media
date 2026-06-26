@@ -188,7 +188,7 @@ function pageHasRoom(measurePage: HTMLElement): boolean {
 }
 
 function pageHasContent(measurePage: HTMLElement): boolean {
-  return measurePage.scrollHeight > 0.5;
+  return Array.from(measurePage.childNodes).some(isMeaningfulChild);
 }
 
 function doesNodeFitEmptyPage(node: Node, measurePage: HTMLElement): boolean {
@@ -254,6 +254,10 @@ function getChildIndex(node: Node): number {
 
 function isMeaningfulChild(node: Node): boolean {
   if (node.nodeType === Node.TEXT_NODE) return (node.textContent?.trim() ?? "") !== "";
+  if (node.nodeType === Node.ELEMENT_NODE && isImageElement(node as Element)) return true;
+  if (node.nodeType === Node.ELEMENT_NODE) {
+    return Array.from(node.childNodes).some(isMeaningfulChild);
+  }
   return true;
 }
 
