@@ -63,13 +63,27 @@ import "vue-paged-media/style.css";
 | `column`     | `number`                                                                                   | Number of content columns on each page. Defaults to `1`.                                                                                      |
 | `columnGap`  | `number`                                                                                   | Gap between columns in millimeters. Defaults to `6`.                                                                                          |
 | `columnRule` | `boolean \| string \| CSSProperties`                                                       | Divider between columns. Pass `true` for the default divider, or pass a string or style object to customize it.                               |
+| `blocks`     | `string[]`                                                                                 | Class selectors for elements that should stay together while they can fit on an empty page, such as `[".keep-together"]`.                     |
 | `corner`     | `number`                                                                                   | Corner square size in millimeters. The side slot thickness uses the same value. It does not reserve space when no page margin slots are used. |
 
 ## Pagination Content
 
 Top-level nodes in the default slot are treated as content blocks. Fragments are expanded; HTML text is treated as one block; if the text is a JSON string array, it is split into multiple HTML blocks.
 
-When a content block does not fit into the remaining page height, the component tries to split text and nested nodes. A single unsplittable element that is taller than one page is placed on one page and allowed to overflow so pagination can finish.
+When a content block does not fit into the remaining page height, the component tries to split text and nested nodes.
+
+Use `blocks` when some elements should stay together during pagination:
+
+```vue
+<VuePagedMedia dimensions="A4" :margin="{ x: 18, y: 24 }" :blocks="['.keep-together']">
+  <section class="keep-together">
+    <h2>Summary</h2>
+    <p>This section moves to the next page as a whole when it can fit there.</p>
+  </section>
+</VuePagedMedia>
+```
+
+Elements matching `blocks` are not split if they can fit on an empty page. If a matched element is taller than the available content height of one page, it falls back to normal splitting so pagination can continue. Images have a separate rule: when an image exceeds the page height or width, it is scaled down to fit the available page area while preserving its aspect ratio.
 
 When `column` is set, each page content area is split into that many columns. Content fills the current column first, continues in the next column when it is full, and moves to the first column of the next page after all columns on the current page are full. `columnGap` participates in column width calculation, while `columnRule` only controls the divider style and does not affect pagination measurement.
 

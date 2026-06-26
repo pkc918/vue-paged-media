@@ -7,4 +7,5 @@
 - [Dimensions](/zh/demo/dimensions)：展示预设尺寸和自定义尺寸两种写法。
 - [Margin](/zh/demo/margin)：展示轴向页边距和四边页边距两种写法。
 - [Column](/zh/demo/column)：展示每页多栏分页的写法。
+- [Blocks](/zh/demo/blocks)：用 `data.json` 和生成图片展示不可拆分块与图片缩放。
 - [页边插槽](/zh/demo/page-margin-slots)：展示页眉、页脚、侧边和四个角标的写法。

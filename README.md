@@ -56,6 +56,10 @@ import "vue-paged-media/style.css";
 | ------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
 | `dimensions` | `"A4" \| "B5" \| { width: number; height: number }`                                        | Page size in mm.                                                                                                                     |
 | `margin`     | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | Page margins in mm.                                                                                                                  |
+| `column`     | `number`                                                                                   | Number of text columns per page.                                                                                                     |
+| `columnGap`  | `number`                                                                                   | Gap between columns in mm.                                                                                                           |
+| `columnRule` | `boolean \| string \| CSSProperties`                                                       | Vertical rule between columns. `true` uses the default style.                                                                        |
+| `blocks`     | `string[]`                                                                                 | CSS class selectors, such as `[".keep-together"]`, for elements that should stay together while they can fit on an empty page.       |
 | `corner`     | `number`                                                                                   | Corner square size in mm. The side slot thickness uses the same value. It does not reserve space when no page margin slots are used. |
 
 ## Page Margin Slots
@@ -79,7 +83,9 @@ Each page margin slot receives `{ index, pageNumber, pageCount }`; `index` start
 
 Top-level nodes in the default slot become content blocks. Fragments are expanded inline; HTML strings are treated as single blocks. When a block overflows the remaining page height, the component splits text nodes via binary search and recursively splits element trees, rebuilding ancestor wrappers around the split content.
 
-A single unsplittable element taller than one page is placed on one page and allowed to overflow so pagination can finish.
+Elements matching `blocks` selectors are treated as keep-together blocks: if the element can fit on an empty page, it moves as a whole to the next page instead of splitting. If it is taller than an empty page, it is split normally so content can continue across pages.
+
+Images that exceed the page height or width are scaled down to fit the available page area while preserving their aspect ratio.
 
 ## Documentation
 

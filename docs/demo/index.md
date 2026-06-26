@@ -7,4 +7,5 @@ This section collects paged media pagination previews for different `vue-paged-m
 - [Dimensions](/demo/dimensions): preset size and custom size usage.
 - [Margin](/demo/margin): axis margin and four-side margin usage.
 - [Column](/demo/column): multi-column pagination on each page.
+- [Blocks](/demo/blocks): keep-together blocks from `data.json` and generated image fitting.
 - [Page Margin Slots](/demo/page-margin-slots): page headers, footers, sides, and corner marks.

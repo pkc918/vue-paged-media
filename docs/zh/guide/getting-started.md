@@ -63,13 +63,27 @@ import "vue-paged-media/style.css";
 | `column`     | `number`                                                                                   | 每页内容栏数，默认 `1`。                                                         |
 | `columnGap`  | `number`                                                                                   | 栏间距，单位为毫米，默认 `6`。                                                   |
 | `columnRule` | `boolean \| string \| CSSProperties`                                                       | 栏间竖线。传 `true` 使用默认竖线，传字符串或样式对象可自定义。                   |
+| `blocks`     | `string[]`                                                                                 | 需要尽量保持整体分页的 class 选择器，例如 `[".keep-together"]`。                 |
 | `corner`     | `number`                                                                                   | 角标方形尺寸，单位为毫米；四边插槽厚度使用同一个值；未使用页边插槽时不占用空间。 |
 
 ## 分页内容
 
 默认插槽里的顶层节点会作为内容块参与分页。Fragment 会被展开；文本形式的 HTML 会作为一个块处理；如果文本内容是 JSON 字符串数组，则会拆成多个 HTML 块。
 
-当内容块超过当前页剩余高度时，组件会尝试拆分文本和嵌套节点。单个不可拆分元素超过一页时，会作为溢出块放入单页，避免分页流程卡住。
+当内容块超过当前页剩余高度时，组件会尝试拆分文本和嵌套节点。
+
+如果有些元素希望尽量保持整体分页，可以使用 `blocks`：
+
+```vue
+<VuePagedMedia dimensions="A4" :margin="{ x: 18, y: 24 }" :blocks="['.keep-together']">
+  <section class="keep-together">
+    <h2>摘要</h2>
+    <p>这个 section 能放进空白内容页时，会整体移动到下一页。</p>
+  </section>
+</VuePagedMedia>
+```
+
+命中 `blocks` 的元素如果能放进一个空白内容页，就不会被拆分；如果它本身高于一页可用内容高度，则会回退到普通拆分规则，保证分页能继续。图片有独立规则：当图片高度或宽度超出一页可用内容区域时，会按对应方向缩小到页内，并保持宽高比自适应。
 
 设置 `column` 后，每页会按指定栏数分割内容区域。内容会先填充当前栏，当前栏满后进入下一栏；当前页所有栏都满后，再进入下一页第一栏。`columnGap` 会参与单栏宽度计算，`columnRule` 只控制栏间竖线样式，不影响分页测量。
 
