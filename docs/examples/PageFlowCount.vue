@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { VuePagedMedia, type VuePagedMediaInstance } from "vue-paged-media";
+import { VuePagedMedia } from "vue-paged-media";
 import "vue-paged-media/style.css";
 import data from "../public/data.json";
 import FitPreview from "./FitPreview.vue";
-import PrintButton from "./PrintButton.vue";
 
 const count = ref(2);
-const paged = ref<VuePagedMediaInstance | null>(null);
 </script>
 
 <template>
@@ -24,10 +22,8 @@ const paged = ref<VuePagedMediaInstance | null>(null);
     </button>
   </div>
 
-  <PrintButton @click="paged?.print()" />
-
   <FitPreview>
-    <VuePagedMedia ref="paged" dimensions="A4" :margin="{ x: 4, y: 4 }" :page-flow-count="count">
+    <VuePagedMedia dimensions="A4" :margin="{ x: 4, y: 4 }" :page-flow-count="count">
       <section v-for="(html, index) in data" :key="index" v-html="html" />
     </VuePagedMedia>
   </FitPreview>

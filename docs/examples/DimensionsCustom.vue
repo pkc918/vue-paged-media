@@ -1,17 +1,11 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { VuePagedMedia, type VuePagedMediaInstance } from "vue-paged-media";
+import { VuePagedMedia } from "vue-paged-media";
 import "vue-paged-media/style.css";
 import data from "../public/data.json";
-import PrintButton from "./PrintButton.vue";
-
-const paged = ref<VuePagedMediaInstance | null>(null);
 </script>
 
 <template>
-  <PrintButton @click="paged?.print()" />
-
-  <VuePagedMedia ref="paged" :dimensions="{ width: 148, height: 210 }" :margin="{ x: 4, y: 4 }">
+  <VuePagedMedia :dimensions="{ width: 148, height: 210 }" :margin="{ x: 4, y: 4 }">
     <section v-for="(html, index) in data" :key="index" v-html="html" />
   </VuePagedMedia>
 </template>
