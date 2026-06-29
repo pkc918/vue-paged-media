@@ -21,17 +21,12 @@ yarn add vue-paged-media
 
 ```vue
 <script setup lang="ts">
-import { ref } from "vue";
-import { VuePagedMedia, type VuePagedMediaInstance } from "vue-paged-media";
+import { VuePagedMedia } from "vue-paged-media";
 import "vue-paged-media/style.css";
-
-const paged = ref<VuePagedMediaInstance | null>(null);
 </script>
 
 <template>
-  <button type="button" @click="paged?.print()">Print</button>
-
-  <VuePagedMedia ref="paged" dimensions="A4" :margin="{ x: 18, y: 24 }" :corner="8">
+  <VuePagedMedia dimensions="A4" :margin="{ x: 18, y: 24 }" :corner="8">
     <template #header="{ index }">Header for page {{ index + 1 }}</template>
     <template #footer="{ pageNumber, pageCount }">{{ pageNumber }} / {{ pageCount }}</template>
     <template #top-left-corner>TL</template>
@@ -70,17 +65,25 @@ const paged = ref<VuePagedMediaInstance | null>(null);
 
 The component instance exposes `print(): Promise<void>`. Calling it writes the current paginated pages into a hidden print document and opens the browser system print dialog. Only `.vue-paged-media__page` nodes are printed, so surrounding application UI is excluded.
 
-## Page Flow
+## pageFlow
 
-Use `pageFlow` and `pageFlowCount` to control how preview pages are arranged in the outer container:
+Use `pageFlow` to control the preview direction:
 
 ```vue
-<VuePagedMedia page-flow="x" :page-flow-count="2" dimensions="A4" :margin="{ x: 18, y: 24 }">
+<VuePagedMedia page-flow="x" dimensions="A4" :margin="{ x: 18, y: 24 }">
   ...
 </VuePagedMedia>
 ```
 
-`pageFlow="x"` lays pages left to right and `pageFlowCount` controls pages per row. `pageFlow="y"` lays pages top to bottom and `pageFlowCount` controls pages per column.
+## pageFlowCount
+
+Use `pageFlowCount` to control how many pages are grouped together:
+
+```vue
+<VuePagedMedia :page-flow-count="2" dimensions="A4" :margin="{ x: 18, y: 24 }">
+  ...
+</VuePagedMedia>
+```
 
 ## Page Margin Slots
 

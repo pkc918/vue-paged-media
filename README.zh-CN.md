@@ -21,17 +21,12 @@ yarn add vue-paged-media
 
 ```vue
 <script setup lang="ts">
-import { ref } from "vue";
-import { VuePagedMedia, type VuePagedMediaInstance } from "vue-paged-media";
+import { VuePagedMedia } from "vue-paged-media";
 import "vue-paged-media/style.css";
-
-const paged = ref<VuePagedMediaInstance | null>(null);
 </script>
 
 <template>
-  <button type="button" @click="paged?.print()">打印</button>
-
-  <VuePagedMedia ref="paged" dimensions="A4" :margin="{ x: 18, y: 24 }" :corner="8">
+  <VuePagedMedia dimensions="A4" :margin="{ x: 18, y: 24 }" :corner="8">
     <template #header="{ index }">第 {{ index + 1 }} 页页眉</template>
     <template #footer="{ pageNumber, pageCount }">{{ pageNumber }} / {{ pageCount }}</template>
     <template #top-left-corner>密</template>
@@ -70,17 +65,25 @@ const paged = ref<VuePagedMediaInstance | null>(null);
 
 组件实例暴露了 `print(): Promise<void>` 方法。调用后会把当前分页后的页面内容写入隐藏打印文档，并打开浏览器的系统打印窗口；打印内容只包含 `.vue-paged-media__page` 页面，不会包含预览页之外的其它应用界面。
 
-## 排页方式
+## pageFlow
 
-使用 `pageFlow` 和 `pageFlowCount` 可以控制外层预览容器中的页面排列方式：
+使用 `pageFlow` 控制页面预览方向：
 
 ```vue
-<VuePagedMedia page-flow="x" :page-flow-count="2" dimensions="A4" :margin="{ x: 18, y: 24 }">
+<VuePagedMedia page-flow="x" dimensions="A4" :margin="{ x: 18, y: 24 }">
   ...
 </VuePagedMedia>
 ```
 
-`pageFlow="x"` 表示从左到右横向排页，`pageFlowCount` 控制每行页数。`pageFlow="y"` 表示从上到下纵向排页，`pageFlowCount` 控制每列页数。
+## pageFlowCount
+
+使用 `pageFlowCount` 控制每组展示的页数：
+
+```vue
+<VuePagedMedia :page-flow-count="2" dimensions="A4" :margin="{ x: 18, y: 24 }">
+  ...
+</VuePagedMedia>
+```
 
 ## 页边插槽
 

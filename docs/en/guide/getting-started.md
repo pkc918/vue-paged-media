@@ -28,17 +28,12 @@ $ yarn add vue-paged-media
 
 ```vue
 <script setup lang="ts">
-import { ref } from "vue";
-import { VuePagedMedia, type VuePagedMediaInstance } from "vue-paged-media";
+import { VuePagedMedia } from "vue-paged-media";
 import "vue-paged-media/style.css";
-
-const paged = ref<VuePagedMediaInstance | null>(null);
 </script>
 
 <template>
-  <button type="button" @click="paged?.print()">Print</button>
-
-  <VuePagedMedia ref="paged" dimensions="A4" :margin="{ x: 18, y: 24 }" :corner="8">
+  <VuePagedMedia dimensions="A4" :margin="{ x: 18, y: 24 }" :corner="8">
     <template #header="{ index }">Header for page {{ index + 1 }}</template>
     <template #footer="{ pageNumber, pageCount }">{{ pageNumber }} / {{ pageCount }}</template>
     <template #top-left-corner>TL</template>
@@ -98,17 +93,25 @@ Elements matching `blocks` are not split if they can fit in an empty column. If 
 
 When `column` is set, each page content area is split into that many columns. Content fills the current column first, continues in the next column when it is full, and moves to the first column of the next page after all columns on the current page are full. `columnGap` participates in column width calculation, while `columnRule` only controls the divider style and does not affect pagination measurement.
 
-## Page Flow
+## pageFlow
 
-Use `pageFlow` and `pageFlowCount` to control how preview pages are arranged in the outer container:
+Use `pageFlow` to control the preview direction:
 
 ```vue
-<VuePagedMedia page-flow="x" :page-flow-count="2" dimensions="A4" :margin="{ x: 18, y: 24 }">
+<VuePagedMedia page-flow="x" dimensions="A4" :margin="{ x: 18, y: 24 }">
   <article>...</article>
 </VuePagedMedia>
 ```
 
-`pageFlow="x"` lays pages left to right and `pageFlowCount` controls pages per row. `pageFlow="y"` lays pages top to bottom and `pageFlowCount` controls pages per column. Omit `pageFlowCount` to keep one continuous row or column.
+## pageFlowCount
+
+Use `pageFlowCount` to control how many pages are grouped together:
+
+```vue
+<VuePagedMedia :page-flow-count="2" dimensions="A4" :margin="{ x: 18, y: 24 }">
+  <article>...</article>
+</VuePagedMedia>
+```
 
 ## Page Margin Slots
 

@@ -28,17 +28,12 @@ $ yarn add vue-paged-media
 
 ```vue
 <script setup lang="ts">
-import { ref } from "vue";
-import { VuePagedMedia, type VuePagedMediaInstance } from "vue-paged-media";
+import { VuePagedMedia } from "vue-paged-media";
 import "vue-paged-media/style.css";
-
-const paged = ref<VuePagedMediaInstance | null>(null);
 </script>
 
 <template>
-  <button type="button" @click="paged?.print()">打印</button>
-
-  <VuePagedMedia ref="paged" dimensions="A4" :margin="{ x: 18, y: 24 }" :corner="8">
+  <VuePagedMedia dimensions="A4" :margin="{ x: 18, y: 24 }" :corner="8">
     <template #header="{ index }">第 {{ index + 1 }} 页页眉</template>
     <template #footer="{ pageNumber, pageCount }">{{ pageNumber }} / {{ pageCount }}</template>
     <template #top-left-corner>密</template>
@@ -98,17 +93,25 @@ const paged = ref<VuePagedMediaInstance | null>(null);
 
 设置 `column` 后，每页会按指定栏数分割内容区域。内容会先填充当前栏，当前栏满后进入下一栏；当前页所有栏都满后，再进入下一页第一栏。`columnGap` 会参与单栏宽度计算，`columnRule` 只控制栏间竖线样式，不影响分页测量。
 
-## 排页方式
+## pageFlow
 
-使用 `pageFlow` 和 `pageFlowCount` 可以控制外层预览容器中的页面排列方式：
+使用 `pageFlow` 控制页面预览方向：
 
 ```vue
-<VuePagedMedia page-flow="x" :page-flow-count="2" dimensions="A4" :margin="{ x: 18, y: 24 }">
+<VuePagedMedia page-flow="x" dimensions="A4" :margin="{ x: 18, y: 24 }">
   <article>...</article>
 </VuePagedMedia>
 ```
 
-`pageFlow="x"` 表示从左到右横向排页，`pageFlowCount` 控制每行页数。`pageFlow="y"` 表示从上到下纵向排页，`pageFlowCount` 控制每列页数。不传 `pageFlowCount` 时，会保持连续单行或单列。
+## pageFlowCount
+
+使用 `pageFlowCount` 控制每组展示的页数：
+
+```vue
+<VuePagedMedia :page-flow-count="2" dimensions="A4" :margin="{ x: 18, y: 24 }">
+  <article>...</article>
+</VuePagedMedia>
+```
 
 ## 页边插槽
 
