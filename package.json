@@ -1,6 +1,6 @@
 {
   "name": "vue-paged-media",
-  "version": "0.0.1-beta.3",
+  "version": "0.0.1-beta.4",
   "description": "A Vue library for previewing paged media layouts before printing.",
   "homepage": "https://github.com/pkc918/vue-paged-media",
   "bugs": {
