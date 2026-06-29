@@ -61,15 +61,17 @@ const paged = ref<VuePagedMediaInstance | null>(null);
 
 ## Props
 
-| Name         | Type                                                                                       | Description                                                                                                                                   |
-| ------------ | ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `dimensions` | `"A4" \| "B5" \| { width: number; height: number }`                                        | Page size in millimeters.                                                                                                                     |
-| `margin`     | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | Page margins in millimeters.                                                                                                                  |
-| `column`     | `number`                                                                                   | Number of content columns on each page. Defaults to `1`.                                                                                      |
-| `columnGap`  | `number`                                                                                   | Gap between columns in millimeters. Defaults to `6`.                                                                                          |
-| `columnRule` | `boolean \| string \| CSSProperties`                                                       | Divider between columns. Pass `true` for the default divider, or pass a string or style object to customize it.                               |
-| `blocks`     | `string[]`                                                                                 | Class selectors for elements that should stay together while they can fit on an empty page, such as `[".keep-together"]`.                     |
-| `corner`     | `number`                                                                                   | Corner square size in millimeters. The side slot thickness uses the same value. It does not reserve space when no page margin slots are used. |
+| Name            | Type                                                                                       | Description                                                                                                                                   |
+| --------------- | ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `dimensions`    | `"A4" \| "B5" \| { width: number; height: number }`                                        | Page size in millimeters.                                                                                                                     |
+| `margin`        | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | Page margins in millimeters.                                                                                                                  |
+| `column`        | `number`                                                                                   | Number of content columns on each page. Defaults to `1`.                                                                                      |
+| `columnGap`     | `number`                                                                                   | Gap between columns in millimeters. Defaults to `6`.                                                                                          |
+| `columnRule`    | `boolean \| string \| CSSProperties`                                                       | Divider between columns. Pass `true` for the default divider, or pass a string or style object to customize it.                               |
+| `blocks`        | `string[]`                                                                                 | Class selectors for elements that should stay together while they can fit on an empty page, such as `[".keep-together"]`.                     |
+| `corner`        | `number`                                                                                   | Corner square size in millimeters. The side slot thickness uses the same value. It does not reserve space when no page margin slots are used. |
+| `pageFlow`      | `"x" \| "y"`                                                                               | Page preview flow. `x` lays pages left to right by row; `y` lays pages top to bottom by column. Defaults to `y`.                              |
+| `pageFlowCount` | `number`                                                                                   | Pages per row when `pageFlow="x"`, or pages per column when `pageFlow="y"`. Omit it to keep one continuous row or column.                     |
 
 ## Print Pages
 
@@ -95,6 +97,18 @@ Use `blocks` when some elements should stay together during pagination:
 Elements matching `blocks` are not split if they can fit in an empty column. If a matched element is taller than the available content height of one column, it starts in the next column or page first, then falls back to normal splitting so pagination can continue. Images have a separate rule: when an image exceeds the column height or width, it starts in the next column or page first, then scales down to fit the available area while preserving its aspect ratio.
 
 When `column` is set, each page content area is split into that many columns. Content fills the current column first, continues in the next column when it is full, and moves to the first column of the next page after all columns on the current page are full. `columnGap` participates in column width calculation, while `columnRule` only controls the divider style and does not affect pagination measurement.
+
+## Page Flow
+
+Use `pageFlow` and `pageFlowCount` to control how preview pages are arranged in the outer container:
+
+```vue
+<VuePagedMedia page-flow="x" :page-flow-count="2" dimensions="A4" :margin="{ x: 18, y: 24 }">
+  <article>...</article>
+</VuePagedMedia>
+```
+
+`pageFlow="x"` lays pages left to right and `pageFlowCount` controls pages per row. `pageFlow="y"` lays pages top to bottom and `pageFlowCount` controls pages per column. Omit `pageFlowCount` to keep one continuous row or column.
 
 ## Page Margin Slots
 

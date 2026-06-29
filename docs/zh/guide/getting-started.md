@@ -61,15 +61,17 @@ const paged = ref<VuePagedMediaInstance | null>(null);
 
 ## Props
 
-| 名称         | 类型                                                                                       | 说明                                                                             |
-| ------------ | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
-| `dimensions` | `"A4" \| "B5" \| { width: number; height: number }`                                        | 页面尺寸，单位为毫米。                                                           |
-| `margin`     | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | 页边距，单位为毫米。                                                             |
-| `column`     | `number`                                                                                   | 每页内容栏数，默认 `1`。                                                         |
-| `columnGap`  | `number`                                                                                   | 栏间距，单位为毫米，默认 `6`。                                                   |
-| `columnRule` | `boolean \| string \| CSSProperties`                                                       | 栏间竖线。传 `true` 使用默认竖线，传字符串或样式对象可自定义。                   |
-| `blocks`     | `string[]`                                                                                 | 需要尽量保持整体分页的 class 选择器，例如 `[".keep-together"]`。                 |
-| `corner`     | `number`                                                                                   | 角标方形尺寸，单位为毫米；四边插槽厚度使用同一个值；未使用页边插槽时不占用空间。 |
+| 名称            | 类型                                                                                       | 说明                                                                                     |
+| --------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| `dimensions`    | `"A4" \| "B5" \| { width: number; height: number }`                                        | 页面尺寸，单位为毫米。                                                                   |
+| `margin`        | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | 页边距，单位为毫米。                                                                     |
+| `column`        | `number`                                                                                   | 每页内容栏数，默认 `1`。                                                                 |
+| `columnGap`     | `number`                                                                                   | 栏间距，单位为毫米，默认 `6`。                                                           |
+| `columnRule`    | `boolean \| string \| CSSProperties`                                                       | 栏间竖线。传 `true` 使用默认竖线，传字符串或样式对象可自定义。                           |
+| `blocks`        | `string[]`                                                                                 | 需要尽量保持整体分页的 class 选择器，例如 `[".keep-together"]`。                         |
+| `corner`        | `number`                                                                                   | 角标方形尺寸，单位为毫米；四边插槽厚度使用同一个值；未使用页边插槽时不占用空间。         |
+| `pageFlow`      | `"x" \| "y"`                                                                               | 页面预览排列方向。`x` 表示按行从左到右排页；`y` 表示按列从上到下排页，默认 `y`。         |
+| `pageFlowCount` | `number`                                                                                   | `pageFlow="x"` 时表示每行页数，`pageFlow="y"` 时表示每列页数；不传时保持连续单行或单列。 |
 
 ## 打印页面
 
@@ -95,6 +97,18 @@ const paged = ref<VuePagedMediaInstance | null>(null);
 命中 `blocks` 的元素如果能放进一个空白栏，就不会被拆分；如果它本身高于一栏可用内容高度，也会先从下一栏或下一页开始，再回退到普通拆分规则，保证分页能继续。图片有独立规则：当图片高度或宽度超出一栏可用内容区域时，会先从下一栏或下一页开始，再按对应方向缩小到栏内，并保持宽高比自适应。
 
 设置 `column` 后，每页会按指定栏数分割内容区域。内容会先填充当前栏，当前栏满后进入下一栏；当前页所有栏都满后，再进入下一页第一栏。`columnGap` 会参与单栏宽度计算，`columnRule` 只控制栏间竖线样式，不影响分页测量。
+
+## 排页方式
+
+使用 `pageFlow` 和 `pageFlowCount` 可以控制外层预览容器中的页面排列方式：
+
+```vue
+<VuePagedMedia page-flow="x" :page-flow-count="2" dimensions="A4" :margin="{ x: 18, y: 24 }">
+  <article>...</article>
+</VuePagedMedia>
+```
+
+`pageFlow="x"` 表示从左到右横向排页，`pageFlowCount` 控制每行页数。`pageFlow="y"` 表示从上到下纵向排页，`pageFlowCount` 控制每列页数。不传 `pageFlowCount` 时，会保持连续单行或单列。
 
 ## 页边插槽
 

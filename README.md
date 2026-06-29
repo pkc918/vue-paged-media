@@ -54,19 +54,33 @@ const paged = ref<VuePagedMediaInstance | null>(null);
 
 ## Props
 
-| Prop         | Type                                                                                       | Description                                                                                                                          |
-| ------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `dimensions` | `"A4" \| "B5" \| { width: number; height: number }`                                        | Page size in mm.                                                                                                                     |
-| `margin`     | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | Page margins in mm.                                                                                                                  |
-| `column`     | `number`                                                                                   | Number of text columns per page.                                                                                                     |
-| `columnGap`  | `number`                                                                                   | Gap between columns in mm.                                                                                                           |
-| `columnRule` | `boolean \| string \| CSSProperties`                                                       | Vertical rule between columns. `true` uses the default style.                                                                        |
-| `blocks`     | `string[]`                                                                                 | CSS class selectors, such as `[".keep-together"]`, for elements that should stay together while they can fit on an empty page.       |
-| `corner`     | `number`                                                                                   | Corner square size in mm. The side slot thickness uses the same value. It does not reserve space when no page margin slots are used. |
+| Prop            | Type                                                                                       | Description                                                                                                                          |
+| --------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `dimensions`    | `"A4" \| "B5" \| { width: number; height: number }`                                        | Page size in mm.                                                                                                                     |
+| `margin`        | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | Page margins in mm.                                                                                                                  |
+| `column`        | `number`                                                                                   | Number of text columns per page.                                                                                                     |
+| `columnGap`     | `number`                                                                                   | Gap between columns in mm.                                                                                                           |
+| `columnRule`    | `boolean \| string \| CSSProperties`                                                       | Vertical rule between columns. `true` uses the default style.                                                                        |
+| `blocks`        | `string[]`                                                                                 | CSS class selectors, such as `[".keep-together"]`, for elements that should stay together while they can fit on an empty page.       |
+| `corner`        | `number`                                                                                   | Corner square size in mm. The side slot thickness uses the same value. It does not reserve space when no page margin slots are used. |
+| `pageFlow`      | `"x" \| "y"`                                                                               | Page preview flow. `x` lays pages left to right by row; `y` lays pages top to bottom by column. Defaults to `y`.                     |
+| `pageFlowCount` | `number`                                                                                   | Pages per row when `pageFlow="x"`, or pages per column when `pageFlow="y"`. Omit it to keep one continuous row or column.            |
 
 ## Printing
 
 The component instance exposes `print(): Promise<void>`. Calling it writes the current paginated pages into a hidden print document and opens the browser system print dialog. Only `.vue-paged-media__page` nodes are printed, so surrounding application UI is excluded.
+
+## Page Flow
+
+Use `pageFlow` and `pageFlowCount` to control how preview pages are arranged in the outer container:
+
+```vue
+<VuePagedMedia page-flow="x" :page-flow-count="2" dimensions="A4" :margin="{ x: 18, y: 24 }">
+  ...
+</VuePagedMedia>
+```
+
+`pageFlow="x"` lays pages left to right and `pageFlowCount` controls pages per row. `pageFlow="y"` lays pages top to bottom and `pageFlowCount` controls pages per column.
 
 ## Page Margin Slots
 

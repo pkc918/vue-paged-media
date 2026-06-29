@@ -25,5 +25,6 @@ Click the “打印 / Print” button in the example below to send the current p
 - [Dimensions](/en/demo/dimensions): preset size and custom size usage.
 - [Margin](/en/demo/margin): axis margin and four-side margin usage.
 - [Column](/en/demo/column): multi-column pagination on each page.
+- [Page Flow](/en/demo/page-flow): page preview layout on the x or y axis.
 - [Blocks](/en/demo/blocks): keep-together blocks from `data.json` and generated image fitting.
 - [Page Margin Slots](/en/demo/page-margin-slots): page headers, footers, sides, and corner marks.

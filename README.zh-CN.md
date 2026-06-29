@@ -54,19 +54,33 @@ const paged = ref<VuePagedMediaInstance | null>(null);
 
 ## Props
 
-| 参数         | 类型                                                                                       | 默认值  | 说明                                                                          |
-| ------------ | ------------------------------------------------------------------------------------------ | ------- | ----------------------------------------------------------------------------- |
-| `dimensions` | `"A4" \| "B5" \| { width: number; height: number }`                                        | —       | 页面尺寸，单位 mm。                                                           |
-| `margin`     | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | —       | 页边距，单位 mm。                                                             |
-| `column`     | `number`                                                                                   | `1`     | 单页文字列数。                                                                |
-| `columnGap`  | `number`                                                                                   | `6`     | 列间距，单位 mm。                                                             |
-| `columnRule` | `boolean \| string \| CSSProperties`                                                       | `false` | 列间竖线样式，`true` 使用默认样式。                                           |
-| `blocks`     | `string[]`                                                                                 | `[]`    | 需要尽量保持整体分页的 class 选择器，例如 `[".keep-together"]`。              |
-| `corner`     | `number`                                                                                   | `8`     | 角标方形尺寸，单位 mm；四边插槽厚度使用同一个值；未使用页边插槽时不占用空间。 |
+| 参数            | 类型                                                                                       | 默认值  | 说明                                                                                     |
+| --------------- | ------------------------------------------------------------------------------------------ | ------- | ---------------------------------------------------------------------------------------- |
+| `dimensions`    | `"A4" \| "B5" \| { width: number; height: number }`                                        | —       | 页面尺寸，单位 mm。                                                                      |
+| `margin`        | `{ x: number; y: number } \| { top: number; right: number; bottom: number; left: number }` | —       | 页边距，单位 mm。                                                                        |
+| `column`        | `number`                                                                                   | `1`     | 单页文字列数。                                                                           |
+| `columnGap`     | `number`                                                                                   | `6`     | 列间距，单位 mm。                                                                        |
+| `columnRule`    | `boolean \| string \| CSSProperties`                                                       | `false` | 列间竖线样式，`true` 使用默认样式。                                                      |
+| `blocks`        | `string[]`                                                                                 | `[]`    | 需要尽量保持整体分页的 class 选择器，例如 `[".keep-together"]`。                         |
+| `corner`        | `number`                                                                                   | `8`     | 角标方形尺寸，单位 mm；四边插槽厚度使用同一个值；未使用页边插槽时不占用空间。            |
+| `pageFlow`      | `"x" \| "y"`                                                                               | `"y"`   | 页面预览排列方向。`x` 表示按行从左到右排页；`y` 表示按列从上到下排页。                   |
+| `pageFlowCount` | `number`                                                                                   | —       | `pageFlow="x"` 时表示每行页数，`pageFlow="y"` 时表示每列页数；不传时保持连续单行或单列。 |
 
 ## 打印
 
 组件实例暴露了 `print(): Promise<void>` 方法。调用后会把当前分页后的页面内容写入隐藏打印文档，并打开浏览器的系统打印窗口；打印内容只包含 `.vue-paged-media__page` 页面，不会包含预览页之外的其它应用界面。
+
+## 排页方式
+
+使用 `pageFlow` 和 `pageFlowCount` 可以控制外层预览容器中的页面排列方式：
+
+```vue
+<VuePagedMedia page-flow="x" :page-flow-count="2" dimensions="A4" :margin="{ x: 18, y: 24 }">
+  ...
+</VuePagedMedia>
+```
+
+`pageFlow="x"` 表示从左到右横向排页，`pageFlowCount` 控制每行页数。`pageFlow="y"` 表示从上到下纵向排页，`pageFlowCount` 控制每列页数。
 
 ## 页边插槽
 
