@@ -9,7 +9,6 @@ import {
   onUpdated,
   ref,
   watch,
-  type CSSProperties,
   type ComponentPublicInstance,
   type PropType,
 } from "vue";
@@ -18,39 +17,27 @@ import type {
   PageDimensions,
   PageFlow,
   PageMarginInput,
-  PageMarginSlotProps,
   PaginationResult,
 } from "./types/index.ts";
+import { PagesView } from "./components/PagesView.ts";
+import { usePageLayout } from "./composables/usePageLayout.ts";
 import {
-  getMargin,
-  getPageSize,
   contentBlockAttribute,
-  getColumnRuleOffset,
-  getColumnRuleStyle,
-  getColumnWidth,
-  normalizeColumnCount,
-  normalizeColumnGap,
   normalizeContentBlocks,
+  pageMarginSlotNames,
   paginateSourceBlocks,
 } from "./utils/index.ts";
 import { printPagedMedia } from "./utils/print.ts";
-
-const pageMarginSlotNames = [
-  "header",
-  "footer",
-  "left",
-  "right",
-  "top-left-corner",
-  "top-right-corner",
-  "bottom-left-corner",
-  "bottom-right-corner",
-] as const;
 
 export interface VuePagedMediaExpose {
   print: () => Promise<void>;
 }
 
 export type VuePagedMediaInstance = ComponentPublicInstance & VuePagedMediaExpose;
+
+interface PagesViewExpose {
+  element: HTMLElement | null;
+}
 
 export const VuePagedMedia = defineComponent({
   name: "VuePagedMedia",
@@ -95,148 +82,19 @@ export const VuePagedMedia = defineComponent({
   setup(props, { slots, expose }) {
     const sourceRef = ref<HTMLElement | null>(null);
     const measurePageRef = ref<HTMLElement | null>(null);
-    const pagesRef = ref<HTMLElement | null>(null);
+    const pagesRef = ref<PagesViewExpose | null>(null);
     const pages = ref<PaginationResult>([]);
     let scheduled = false;
     let mutationObserver: MutationObserver | null = null;
     let resizeObserver: ResizeObserver | null = null;
 
-    const pageSize = computed(() => getPageSize(props.dimensions));
-    const pageMargin = computed(() => getMargin(props.margin));
-    const cornerSize = computed(() => {
-      if (!hasPageMarginSlots()) return 0;
-      return Math.max(0, props.corner ?? 8);
-    });
-    const pageInset = computed(() => ({
-      top: pageMargin.value.top + cornerSize.value,
-      right: pageMargin.value.right + cornerSize.value,
-      bottom: pageMargin.value.bottom + cornerSize.value,
-      left: pageMargin.value.left + cornerSize.value,
-    }));
-    const contentSize = computed(() => ({
-      width: pageSize.value.width - pageInset.value.left - pageInset.value.right,
-      height: pageSize.value.height - pageInset.value.top - pageInset.value.bottom,
-    }));
-    const columnCount = computed(() => normalizeColumnCount(props.column));
-    const columnGap = computed(() => normalizeColumnGap(props.columnGap));
-    const pageFlowCount = computed(() => normalizePageFlowCount(props.pageFlowCount));
-    const columnSize = computed(() => ({
-      width: getColumnWidth(contentSize.value.width, columnCount.value, columnGap.value),
-      height: contentSize.value.height,
-    }));
-
-    const pageStyle = computed<CSSProperties>(() => ({
-      flex: "0 0 auto",
-      width: `${pageSize.value.width}mm`,
-      height: `${pageSize.value.height}mm`,
-      boxSizing: "border-box",
-      background: "#fff",
-      overflow: "hidden",
-      position: "relative",
-    }));
-
-    const pagesStyle = computed<CSSProperties>(() => {
-      if (props.pageFlow === "x") {
-        if (pageFlowCount.value === null) {
-          return {
-            display: "grid",
-            gridAutoColumns: "max-content",
-            gridAutoFlow: "column",
-            width: "max-content",
-          };
-        }
-
-        return {
-          display: "grid",
-          gridAutoFlow: "row",
-          gridTemplateColumns: `repeat(${pageFlowCount.value}, max-content)`,
-          width: "max-content",
-        };
-      }
-
-      if (pageFlowCount.value === null) {
-        return {
-          display: "grid",
-          gridAutoFlow: "row",
-          gridTemplateColumns: "max-content",
-          width: "max-content",
-        };
-      }
-
-      return {
-        display: "grid",
-        gridAutoFlow: "column",
-        gridTemplateRows: `repeat(${pageFlowCount.value}, max-content)`,
-        width: "max-content",
-      };
-    });
-
-    const rootStyle = computed<CSSProperties>(() => ({
-      overflow: "auto",
-      maxWidth: "100%",
-    }));
-
-    const contentContainerStyle = computed<CSSProperties>(() => ({
-      position: "absolute",
-      top: `${cornerSize.value}mm`,
-      right: `${cornerSize.value}mm`,
-      bottom: `${cornerSize.value}mm`,
-      left: `${cornerSize.value}mm`,
-      boxSizing: "border-box",
-      padding: `${pageMargin.value.top}mm ${pageMargin.value.right}mm ${pageMargin.value.bottom}mm ${pageMargin.value.left}mm`,
-      overflow: "hidden",
-    }));
-
-    const contentStyle = computed<CSSProperties>(() => ({
-      width: `${contentSize.value.width}mm`,
-      height: `${contentSize.value.height}mm`,
-      boxSizing: "border-box",
-      overflow: "hidden",
-      display: "flex",
-      gap: `${columnGap.value}mm`,
-      position: "relative",
-    }));
-
-    const fallbackContentStyle = computed<CSSProperties>(() => ({
-      width: `${contentSize.value.width}mm`,
-      minHeight: `${contentSize.value.height}mm`,
-      boxSizing: "border-box",
-      display: "flex",
-      gap: `${columnGap.value}mm`,
-      position: "relative",
-    }));
-
-    const columnStyle = computed<CSSProperties>(() => ({
-      flex: `0 0 ${columnSize.value.width}mm`,
-      width: `${columnSize.value.width}mm`,
-      height: `${columnSize.value.height}mm`,
-      boxSizing: "border-box",
-      overflow: "hidden",
-      overflowWrap: "anywhere",
-      wordBreak: "break-word",
-    }));
-
-    const sourceBlockStyle = computed<CSSProperties>(() => ({
-      width: `${columnSize.value.width}mm`,
-      boxSizing: "border-box",
-    }));
-
-    const hiddenMeasureStyle = computed<CSSProperties>(() => ({
-      position: "absolute",
-      left: "-10000px",
-      top: "0",
-      width: `${columnSize.value.width}mm`,
-      height: `${columnSize.value.height}mm`,
-      overflow: "hidden",
-      visibility: "hidden",
-      pointerEvents: "none",
-      zIndex: "-1",
-      boxSizing: "border-box",
-    }));
-
-    const columnRuleStyle = computed<CSSProperties | null>(() =>
-      getColumnRuleStyle(columnCount.value, props.columnRule),
+    const hasPageMarginSlots = computed(() =>
+      pageMarginSlotNames.some((name) => Boolean(slots[name])),
     );
+    const layout = usePageLayout({
+      props,
+      hasPageMarginSlots,
+    });
 
     function schedulePagination() {
       if (scheduled) return;
@@ -253,7 +111,7 @@ export const VuePagedMedia = defineComponent({
       if (!source || !measurePage) return;
 
       const nextPages = paginateSourceBlocks(source, measurePage, {
-        columnCount: columnCount.value,
+        columnCount: layout.columnCount.value,
         blocks: props.blocks,
       });
       if (JSON.stringify(pages.value) !== JSON.stringify(nextPages)) {
@@ -265,14 +123,14 @@ export const VuePagedMedia = defineComponent({
       paginate();
       await nextTick();
 
-      const pageElements = Array.from(pagesRef.value?.children ?? []).filter(
+      const pageElements = Array.from(pagesRef.value?.element?.children ?? []).filter(
         (element): element is HTMLElement =>
           element instanceof HTMLElement && element.classList.contains("vue-paged-media__page"),
       );
 
       await printPagedMedia({
         pages: pageElements,
-        pageSize: pageSize.value,
+        pageSize: layout.pageSize.value,
       });
     }
 
@@ -331,22 +189,21 @@ export const VuePagedMedia = defineComponent({
 
     return () => {
       const blocks = normalizeContentBlocks(slots.default?.() ?? []);
-      const pageCount = pages.value.length > 0 ? pages.value.length : blocks.length;
 
-      return h("div", { class: "vue-paged-media", style: rootStyle.value }, [
+      return h("div", { class: "vue-paged-media", style: layout.rootStyle.value }, [
         h(
           "div",
           {
             ref: sourceRef,
             class: "vue-paged-media__source",
-            style: hiddenMeasureStyle.value,
+            style: layout.hiddenMeasureStyle.value,
             "aria-hidden": "true",
           },
           blocks.map((block, index) => {
             const common = {
               key: index,
               [contentBlockAttribute]: "",
-              style: sourceBlockStyle.value,
+              style: layout.sourceBlockStyle.value,
             };
             return typeof block === "string"
               ? h("div", { ...common, innerHTML: block })
@@ -356,190 +213,30 @@ export const VuePagedMedia = defineComponent({
         h("div", {
           ref: measurePageRef,
           class: "vue-paged-media__measure-page",
-          style: hiddenMeasureStyle.value,
+          style: layout.hiddenMeasureStyle.value,
           "aria-hidden": "true",
         }),
         h(
-          "div",
-          { ref: pagesRef, class: "vue-paged-media__pages", style: pagesStyle.value },
-          pages.value.length > 0
-            ? pages.value.map((page, index) =>
-                h(
-                  "section",
-                  { key: index, class: "vue-paged-media__page", style: pageStyle.value },
-                  [
-                    ...renderPageMarginSlots(index, pageCount),
-                    h(
-                      "div",
-                      {
-                        class: "vue-paged-media__content-container",
-                        style: contentContainerStyle.value,
-                      },
-                      h(
-                        "div",
-                        {
-                          class: "vue-paged-media__page-content",
-                          style: contentStyle.value,
-                        },
-                        Array.from({ length: columnCount.value }, (_, columnIndex) =>
-                          h("div", {
-                            key: columnIndex,
-                            class: "vue-paged-media__column",
-                            style: columnStyle.value,
-                            innerHTML: (page[columnIndex] ?? []).join(""),
-                          }),
-                        ).concat(renderColumnRules()),
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            : blocks.map((block, index) =>
-                h(
-                  "section",
-                  { key: index, class: "vue-paged-media__page", style: pageStyle.value },
-                  [
-                    ...renderPageMarginSlots(index, pageCount),
-                    h(
-                      "div",
-                      {
-                        class: "vue-paged-media__content-container",
-                        style: contentContainerStyle.value,
-                      },
-                      h(
-                        "div",
-                        {
-                          class: "vue-paged-media__page-content",
-                          style: fallbackContentStyle.value,
-                        },
-                        [
-                          h(
-                            "div",
-                            {
-                              class: "vue-paged-media__column",
-                              style: columnStyle.value,
-                            },
-                            typeof block === "string"
-                              ? h("div", { innerHTML: block })
-                              : cloneVNode(block),
-                          ),
-                          ...renderColumnRules(),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+          PagesView,
+          {
+            ref: pagesRef,
+            blocks,
+            contentContainerStyle: layout.contentContainerStyle.value,
+            contentStyle: layout.contentStyle.value,
+            fallbackContentStyle: layout.fallbackContentStyle.value,
+            columnCount: layout.columnCount.value,
+            columnGap: layout.columnGap.value,
+            columnRuleStyle: layout.columnRuleStyle.value,
+            columnStyle: layout.columnStyle.value,
+            columnWidth: layout.columnSize.value.width,
+            cornerSize: layout.cornerSize.value,
+            pages: pages.value,
+            pageStyle: layout.pageStyle.value,
+            pagesStyle: layout.pagesStyle.value,
+          },
+          slots,
         ),
       ]);
     };
-
-    function hasPageMarginSlots() {
-      return pageMarginSlotNames.some((name) => Boolean(slots[name]));
-    }
-
-    function normalizePageFlowCount(value?: number) {
-      if (value === undefined) return null;
-      if (!Number.isFinite(value)) return 1;
-      return Math.max(1, Math.floor(value));
-    }
-
-    function renderPageMarginSlots(index: number, pageCount: number) {
-      const slotProps: PageMarginSlotProps = {
-        index,
-        pageNumber: index + 1,
-        pageCount,
-      };
-      const slotSize = cornerSize.value;
-
-      return [
-        renderPageMarginSlot("top-left-corner", slotProps, {
-          top: "0",
-          left: "0",
-          width: `${slotSize}mm`,
-          height: `${slotSize}mm`,
-        }),
-        renderPageMarginSlot("header", slotProps, {
-          top: "0",
-          left: `${slotSize}mm`,
-          right: `${slotSize}mm`,
-          height: `${slotSize}mm`,
-        }),
-        renderPageMarginSlot("top-right-corner", slotProps, {
-          top: "0",
-          right: "0",
-          width: `${slotSize}mm`,
-          height: `${slotSize}mm`,
-        }),
-        renderPageMarginSlot("right", slotProps, {
-          top: `${slotSize}mm`,
-          right: "0",
-          bottom: `${slotSize}mm`,
-          width: `${slotSize}mm`,
-        }),
-        renderPageMarginSlot("bottom-right-corner", slotProps, {
-          right: "0",
-          bottom: "0",
-          width: `${slotSize}mm`,
-          height: `${slotSize}mm`,
-        }),
-        renderPageMarginSlot("footer", slotProps, {
-          right: `${slotSize}mm`,
-          bottom: "0",
-          left: `${slotSize}mm`,
-          height: `${slotSize}mm`,
-        }),
-        renderPageMarginSlot("bottom-left-corner", slotProps, {
-          bottom: "0",
-          left: "0",
-          width: `${slotSize}mm`,
-          height: `${slotSize}mm`,
-        }),
-        renderPageMarginSlot("left", slotProps, {
-          top: `${slotSize}mm`,
-          bottom: `${slotSize}mm`,
-          left: "0",
-          width: `${slotSize}mm`,
-        }),
-      ].filter((slot): slot is ReturnType<typeof h> => slot !== null);
-    }
-
-    function renderPageMarginSlot(
-      name: string,
-      slotProps: PageMarginSlotProps,
-      style: CSSProperties,
-    ) {
-      const slot = slots[name];
-      if (!slot) return null;
-
-      return h(
-        "div",
-        {
-          class: ["vue-paged-media__page-margin-box", `vue-paged-media__page-margin-box--${name}`],
-          style: {
-            position: "absolute",
-            ...style,
-          },
-        },
-        slot(slotProps),
-      );
-    }
-
-    function renderColumnRules() {
-      const style = columnRuleStyle.value;
-      if (!style) return [];
-
-      return Array.from({ length: columnCount.value - 1 }, (_, index) =>
-        h("div", {
-          key: `rule-${index}`,
-          class: "vue-paged-media__column-rule",
-          style: {
-            ...style,
-            left: `${getColumnRuleOffset(index, columnSize.value.width, columnGap.value)}mm`,
-          },
-          "aria-hidden": "true",
-        }),
-      );
-    }
   },
 });
