@@ -10,6 +10,7 @@ import {
   ref,
   watch,
   type CSSProperties,
+  type ComponentPublicInstance,
   type PropType,
 } from "vue";
 import type {
@@ -31,6 +32,7 @@ import {
   normalizeContentBlocks,
   paginateSourceBlocks,
 } from "./utils/index.ts";
+import { printPagedMedia } from "./utils/print.ts";
 
 const pageMarginSlotNames = [
   "header",
@@ -42,6 +44,12 @@ const pageMarginSlotNames = [
   "bottom-left-corner",
   "bottom-right-corner",
 ] as const;
+
+export interface VuePagedMediaExpose {
+  print: () => Promise<void>;
+}
+
+export type VuePagedMediaInstance = ComponentPublicInstance & VuePagedMediaExpose;
 
 export const VuePagedMedia = defineComponent({
   name: "VuePagedMedia",
@@ -75,9 +83,10 @@ export const VuePagedMedia = defineComponent({
       default: undefined,
     },
   },
-  setup(props, { slots }) {
+  setup(props, { slots, expose }) {
     const sourceRef = ref<HTMLElement | null>(null);
     const measurePageRef = ref<HTMLElement | null>(null);
+    const pagesRef = ref<HTMLElement | null>(null);
     const pages = ref<PaginationResult>([]);
     let scheduled = false;
     let mutationObserver: MutationObserver | null = null;
@@ -201,6 +210,21 @@ export const VuePagedMedia = defineComponent({
       }
     }
 
+    async function print() {
+      paginate();
+      await nextTick();
+
+      const pageElements = Array.from(pagesRef.value?.children ?? []).filter(
+        (element): element is HTMLElement =>
+          element instanceof HTMLElement && element.classList.contains("vue-paged-media__page"),
+      );
+
+      await printPagedMedia({
+        pages: pageElements,
+        pageSize: pageSize.value,
+      });
+    }
+
     function observeSource() {
       mutationObserver?.disconnect();
       resizeObserver?.disconnect();
@@ -250,6 +274,7 @@ export const VuePagedMedia = defineComponent({
         deep: true,
       },
     );
+    expose({ print });
 
     return () => {
       const blocks = normalizeContentBlocks(slots.default?.() ?? []);
@@ -283,7 +308,7 @@ export const VuePagedMedia = defineComponent({
         }),
         h(
           "div",
-          { class: "vue-paged-media__pages" },
+          { ref: pagesRef, class: "vue-paged-media__pages" },
           pages.value.length > 0
             ? pages.value.map((page, index) =>
                 h(
