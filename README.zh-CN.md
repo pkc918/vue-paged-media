@@ -24,12 +24,17 @@ yarn add vue-paged-media
 
 ```vue
 <script setup lang="ts">
-import { VuePagedMedia } from "vue-paged-media";
+import { ref } from "vue";
+import { VuePagedMedia, type VuePagedMediaInstance } from "vue-paged-media";
 import "vue-paged-media/style.css";
+
+const paged = ref<VuePagedMediaInstance | null>(null);
 </script>
 
 <template>
-  <VuePagedMedia dimensions="A4" :margin="{ x: 18, y: 24 }" :corner="8">
+  <button type="button" @click="paged?.print()">打印</button>
+
+  <VuePagedMedia ref="paged" dimensions="A4" :margin="{ x: 18, y: 24 }" :corner="8">
     <template #header="{ index }">第 {{ index + 1 }} 页页眉</template>
     <template #footer="{ pageNumber, pageCount }">{{ pageNumber }} / {{ pageCount }}</template>
     <template #top-left-corner>密</template>
@@ -61,6 +66,10 @@ import "vue-paged-media/style.css";
 | `columnRule` | `boolean \| string \| CSSProperties`                                                       | `false` | 列间竖线样式，`true` 使用默认样式。                                           |
 | `blocks`     | `string[]`                                                                                 | `[]`    | 需要尽量保持整体分页的 class 选择器，例如 `[".keep-together"]`。              |
 | `corner`     | `number`                                                                                   | `8`     | 角标方形尺寸，单位 mm；四边插槽厚度使用同一个值；未使用页边插槽时不占用空间。 |
+
+## 打印
+
+组件实例暴露了 `print(): Promise<void>` 方法。调用后会把当前分页后的页面内容写入隐藏打印文档，并打开浏览器的系统打印窗口；打印内容只包含 `.vue-paged-media__page` 页面，不会包含预览页之外的其它应用界面。
 
 ## 页边插槽
 

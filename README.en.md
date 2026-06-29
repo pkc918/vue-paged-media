@@ -24,12 +24,17 @@ yarn add vue-paged-media
 
 ```vue
 <script setup lang="ts">
-import { VuePagedMedia } from "vue-paged-media";
+import { ref } from "vue";
+import { VuePagedMedia, type VuePagedMediaInstance } from "vue-paged-media";
 import "vue-paged-media/style.css";
+
+const paged = ref<VuePagedMediaInstance | null>(null);
 </script>
 
 <template>
-  <VuePagedMedia dimensions="A4" :margin="{ x: 18, y: 24 }" :corner="8">
+  <button type="button" @click="paged?.print()">Print</button>
+
+  <VuePagedMedia ref="paged" dimensions="A4" :margin="{ x: 18, y: 24 }" :corner="8">
     <template #header="{ index }">Header for page {{ index + 1 }}</template>
     <template #footer="{ pageNumber, pageCount }">{{ pageNumber }} / {{ pageCount }}</template>
     <template #top-left-corner>TL</template>
@@ -61,6 +66,10 @@ import "vue-paged-media/style.css";
 | `columnRule` | `boolean \| string \| CSSProperties`                                                       | Vertical rule between columns. `true` uses the default style.                                                                        |
 | `blocks`     | `string[]`                                                                                 | CSS class selectors, such as `[".keep-together"]`, for elements that should stay together while they can fit on an empty page.       |
 | `corner`     | `number`                                                                                   | Corner square size in mm. The side slot thickness uses the same value. It does not reserve space when no page margin slots are used. |
+
+## Printing
+
+The component instance exposes `print(): Promise<void>`. Calling it writes the current paginated pages into a hidden print document and opens the browser system print dialog. Only `.vue-paged-media__page` nodes are printed, so surrounding application UI is excluded.
 
 ## Page Margin Slots
 
