@@ -15,11 +15,32 @@ function updateScale() {
   if (!viewport || !content) return;
 
   const contentWidth = content.scrollWidth;
-  if (contentWidth <= 0) return;
+  const contentHeight = content.scrollHeight;
+  if (contentWidth <= 0 || contentHeight <= 0) return;
 
-  const nextScale = Math.min(1, viewport.clientWidth / contentWidth);
+  const nextScale = Math.min(
+    1,
+    viewport.clientWidth / contentWidth,
+    getAvailableHeight(viewport) / contentHeight,
+  );
   scale.value = nextScale;
-  height.value = content.scrollHeight * nextScale;
+  height.value = contentHeight * nextScale;
+}
+
+function getAvailableHeight(viewport: HTMLElement) {
+  const parent = viewport.parentElement;
+  if (!parent) return Number.POSITIVE_INFINITY;
+
+  const siblingsHeight = Array.from(parent.children).reduce((total, child) => {
+    if (child === viewport || !(child instanceof HTMLElement)) return total;
+
+    const style = window.getComputedStyle(child);
+    return (
+      total + child.offsetHeight + parseFloat(style.marginTop) + parseFloat(style.marginBottom)
+    );
+  }, 0);
+
+  return Math.max(1, parent.clientHeight - siblingsHeight);
 }
 
 onMounted(() => {
@@ -29,6 +50,7 @@ onMounted(() => {
     resizeObserver = new ResizeObserver(updateScale);
     if (viewportRef.value) resizeObserver.observe(viewportRef.value);
     if (contentRef.value) resizeObserver.observe(contentRef.value);
+    if (viewportRef.value?.parentElement) resizeObserver.observe(viewportRef.value.parentElement);
   }
 
   if (typeof MutationObserver !== "undefined" && contentRef.value) {
@@ -57,12 +79,15 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .fit-preview {
+  display: flex;
+  justify-content: center;
   max-width: 100%;
   overflow: hidden;
+  width: 100%;
 }
 
 .fit-preview__content {
-  transform-origin: top left;
+  transform-origin: top center;
   width: max-content;
 }
 
