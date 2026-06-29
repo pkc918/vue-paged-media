@@ -1,9 +1,6 @@
 # vue-paged-media
 
-## 语言
-
-- [English](./README.md)
-- [简体中文](./README.zh-CN.md)
+[English](./README.md) | **简体中文**
 
 一个 Vue 3 组件，用于在浏览器中预览 paged media 分页效果。组件根据页面尺寸和页边距测量真实 DOM 内容，再将分页结果渲染为页面预览。
 

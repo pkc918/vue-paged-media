@@ -1,9 +1,6 @@
 # vue-paged-media
 
-## Languages
-
-- [English](./README.md)
-- [简体中文](./README.zh-CN.md)
+**English** | [简体中文](./README.zh-CN.md)
 
 A Vue 3 component for previewing paged media pagination in the browser. It measures real DOM content against page dimensions and margins, then renders the paginated result as page previews.
 
