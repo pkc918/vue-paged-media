@@ -1,4 +1,5 @@
 export type PresetPageSize = "A4" | "B5";
+export type PageFlow = "x" | "y";
 
 export interface PageSize {
   width: number;

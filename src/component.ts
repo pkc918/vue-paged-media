@@ -16,6 +16,7 @@ import {
 import type {
   ColumnRule,
   PageDimensions,
+  PageFlow,
   PageMarginInput,
   PageMarginSlotProps,
   PaginationResult,
@@ -82,6 +83,14 @@ export const VuePagedMedia = defineComponent({
       type: Number,
       default: undefined,
     },
+    pageFlow: {
+      type: String as PropType<PageFlow>,
+      default: "y",
+    },
+    pageFlowCount: {
+      type: Number,
+      default: undefined,
+    },
   },
   setup(props, { slots, expose }) {
     const sourceRef = ref<HTMLElement | null>(null);
@@ -110,6 +119,7 @@ export const VuePagedMedia = defineComponent({
     }));
     const columnCount = computed(() => normalizeColumnCount(props.column));
     const columnGap = computed(() => normalizeColumnGap(props.columnGap));
+    const pageFlowCount = computed(() => normalizePageFlowCount(props.pageFlowCount));
     const columnSize = computed(() => ({
       width: getColumnWidth(contentSize.value.width, columnCount.value, columnGap.value),
       height: contentSize.value.height,
@@ -123,6 +133,47 @@ export const VuePagedMedia = defineComponent({
       background: "#fff",
       overflow: "hidden",
       position: "relative",
+    }));
+
+    const pagesStyle = computed<CSSProperties>(() => {
+      if (props.pageFlow === "x") {
+        if (pageFlowCount.value === null) {
+          return {
+            display: "grid",
+            gridAutoColumns: "max-content",
+            gridAutoFlow: "column",
+            width: "max-content",
+          };
+        }
+
+        return {
+          display: "grid",
+          gridAutoFlow: "row",
+          gridTemplateColumns: `repeat(${pageFlowCount.value}, max-content)`,
+          width: "max-content",
+        };
+      }
+
+      if (pageFlowCount.value === null) {
+        return {
+          display: "grid",
+          gridAutoFlow: "row",
+          gridTemplateColumns: "max-content",
+          width: "max-content",
+        };
+      }
+
+      return {
+        display: "grid",
+        gridAutoFlow: "column",
+        gridTemplateRows: `repeat(${pageFlowCount.value}, max-content)`,
+        width: "max-content",
+      };
+    });
+
+    const rootStyle = computed<CSSProperties>(() => ({
+      overflow: "auto",
+      maxWidth: "100%",
     }));
 
     const contentContainerStyle = computed<CSSProperties>(() => ({
@@ -268,6 +319,8 @@ export const VuePagedMedia = defineComponent({
         props.columnRule,
         props.blocks,
         props.corner,
+        props.pageFlow,
+        props.pageFlowCount,
       ],
       schedulePagination,
       {
@@ -280,7 +333,7 @@ export const VuePagedMedia = defineComponent({
       const blocks = normalizeContentBlocks(slots.default?.() ?? []);
       const pageCount = pages.value.length > 0 ? pages.value.length : blocks.length;
 
-      return h("div", { class: "vue-paged-media" }, [
+      return h("div", { class: "vue-paged-media", style: rootStyle.value }, [
         h(
           "div",
           {
@@ -308,7 +361,7 @@ export const VuePagedMedia = defineComponent({
         }),
         h(
           "div",
-          { ref: pagesRef, class: "vue-paged-media__pages" },
+          { ref: pagesRef, class: "vue-paged-media__pages", style: pagesStyle.value },
           pages.value.length > 0
             ? pages.value.map((page, index) =>
                 h(
@@ -383,6 +436,12 @@ export const VuePagedMedia = defineComponent({
 
     function hasPageMarginSlots() {
       return pageMarginSlotNames.some((name) => Boolean(slots[name]));
+    }
+
+    function normalizePageFlowCount(value?: number) {
+      if (value === undefined) return null;
+      if (!Number.isFinite(value)) return 1;
+      return Math.max(1, Math.floor(value));
     }
 
     function renderPageMarginSlots(index: number, pageCount: number) {
